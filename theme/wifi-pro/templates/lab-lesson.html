@@ -1,0 +1,18 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+<!-- wp:group {"tagName":"main","className":"page-main","layout":{"type":"constrained","wideSize":"1200px"}} -->
+<main class="wp-block-group page-main">
+	<!-- wp:shortcode -->[wifi_lab_crumbs]<!-- /wp:shortcode -->
+	<!-- wp:post-title {"level":1,"align":"wide"} /-->
+	<!-- wp:shortcode -->[wifi_lab_nav position="top"]<!-- /wp:shortcode -->
+	<!-- wp:group {"align":"wide","className":"lab-layout","layout":{"type":"default"}} -->
+	<div class="wp-block-group alignwide lab-layout">
+		<!-- wp:post-content {"className":"lab-lesson","layout":{"type":"default"}} /-->
+		<!-- wp:html -->
+		<nav class="lab-toc" aria-label="On this page"><p class="lab-toc__t">On this page</p><ol class="lab-toc__list"></ol></nav>
+		<!-- /wp:html -->
+	</div>
+	<!-- /wp:group -->
+	<!-- wp:shortcode -->[wifi_lab_nav position="bottom"]<!-- /wp:shortcode -->
+</main>
+<!-- /wp:group -->
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

@@ -1,0 +1,286 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
+<main class="wp-block-group">
+
+	<!-- HERO -->
+	<!-- wp:group {"align":"full","className":"hero","layout":{"type":"constrained","wideSize":"1200px"}} -->
+	<div class="wp-block-group alignfull hero">
+		<!-- wp:columns {"align":"wide","className":"hero-cols"} -->
+		<div class="wp-block-columns alignwide hero-cols">
+			<!-- wp:column {"verticalAlignment":"center","width":"55%"} -->
+			<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:55%">
+				<!-- wp:paragraph {"className":"eyebrow"} -->
+				<p class="eyebrow">Wi-Fi testing, troubleshooting and learning</p>
+				<!-- /wp:paragraph -->
+				<!-- wp:heading {"level":1,"className":"hero-title"} -->
+				<h1 class="wp-block-heading hero-title">How Wi-Fi really works, from the test lab</h1>
+				<!-- /wp:heading -->
+				<!-- wp:paragraph {"className":"hero-lead"} -->
+				<p class="hero-lead">I test home routers and mesh systems before they reach customers. This site shares what I've learned: what breaks, why, and how to prove it.</p>
+				<!-- /wp:paragraph -->
+				<!-- wp:buttons {"className":"hero-buttons"} -->
+				<div class="wp-block-buttons hero-buttons">
+					<!-- wp:button {"className":"btn-primary"} -->
+					<div class="wp-block-button btn-primary"><a class="wp-block-button__link wp-element-button" href="/lab/">Explore the interactive lab</a></div>
+					<!-- /wp:button -->
+					<!-- wp:button {"className":"btn-ghost is-style-outline"} -->
+					<div class="wp-block-button btn-ghost is-style-outline"><a class="wp-block-button__link wp-element-button" href="/library/">Browse the library</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+			</div>
+			<!-- /wp:column -->
+
+			<!-- wp:column {"verticalAlignment":"center","width":"45%"} -->
+			<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:45%">
+				<!-- wp:html -->
+				<div class="wave-demo" id="wave-demo" role="group" aria-label="Wavelength demo: pick a Wi-Fi band to see how wavelength changes">
+					<div class="wave-demo__head"><span class="wave-demo__tag">Try it</span> Same signal, three bands</div>
+					<svg class="wave-demo__svg" viewBox="0 0 400 140" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+						<line x1="0" y1="70" x2="400" y2="70" class="wave-axis"/>
+						<path id="wave-path" class="wave-line" d="M0 70"/>
+					</svg>
+					<div class="wave-demo__seg" role="group" aria-label="Frequency band">
+						<button type="button" data-ghz="2.4" aria-pressed="true">2.4 GHz</button>
+						<button type="button" data-ghz="5" aria-pressed="false">5 GHz</button>
+						<button type="button" data-ghz="6" aria-pressed="false">6 GHz</button>
+					</div>
+					<div class="wave-demo__read" aria-live="polite">
+						<div><span class="wave-demo__val" id="wave-wl">12.5 cm</span><span class="wave-demo__lab">wavelength (approx.)</span></div>
+						<div><span class="wave-demo__val" id="wave-cycles">1 wave</span><span class="wave-demo__lab">in this frame</span></div>
+					</div>
+					<p class="wave-demo__note" id="wave-note">Longer waves travel through walls more easily, but the band is crowded and offers fewer channels.</p>
+					<a class="wave-demo__learn" id="wave-learn" href="/lab/2-4-ghz/">Learn more about 2.4 GHz Wi-Fi &rarr;</a>
+				</div>
+				<!-- /wp:html -->
+			</div>
+			<!-- /wp:column -->
+		</div>
+		<!-- /wp:columns -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- WHAT YOU'LL FIND -->
+	<!-- wp:group {"align":"full","className":"section","layout":{"type":"constrained","wideSize":"1200px"}} -->
+	<div class="wp-block-group alignfull section">
+		<!-- wp:heading {"align":"wide","className":"section-title"} -->
+		<h2 class="wp-block-heading alignwide section-title">What you'll find here</h2>
+		<!-- /wp:heading -->
+
+		<!-- wp:columns {"align":"wide","className":"cards"} -->
+		<div class="wp-block-columns alignwide cards">
+			<!-- wp:column -->
+			<div class="wp-block-column">
+				<!-- wp:group {"className":"card","layout":{"type":"default"}} -->
+				<div class="wp-block-group card">
+					<!-- wp:paragraph {"className":"card-kicker"} --><p class="card-kicker">01</p><!-- /wp:paragraph -->
+					<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">Interactive Wi-Fi lab</h3><!-- /wp:heading -->
+					<!-- wp:paragraph --><p>Hands-on models of MIMO, beamforming, QAM, roaming, channel bonding, antennas and more. Move the sliders and see the physics change.</p><!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
+			</div>
+			<!-- /wp:column -->
+			<!-- wp:column -->
+			<div class="wp-block-column">
+				<!-- wp:group {"className":"card","layout":{"type":"default"}} -->
+				<div class="wp-block-group card">
+					<!-- wp:paragraph {"className":"card-kicker"} --><p class="card-kicker">02</p><!-- /wp:paragraph -->
+					<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">Real-world investigations</h3><!-- /wp:heading -->
+					<!-- wp:paragraph --><p>Defects and behaviours found in testing, from reconnect loops to roaming failures, explained with the evidence that pinned them down.</p><!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
+			</div>
+			<!-- /wp:column -->
+			<!-- wp:column -->
+			<div class="wp-block-column">
+				<!-- wp:group {"className":"card","layout":{"type":"default"}} -->
+				<div class="wp-block-group card">
+					<!-- wp:paragraph {"className":"card-kicker"} --><p class="card-kicker">03</p><!-- /wp:paragraph -->
+					<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">Home Wi-Fi made clear</h3><!-- /wp:heading -->
+					<!-- wp:paragraph --><p>Plain-English guides to router placement, mesh, channels and why "full bars" doesn't always mean fast.</p><!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
+			</div>
+			<!-- /wp:column -->
+		</div>
+		<!-- /wp:columns -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- LAB TEASER -->
+	<!-- wp:group {"align":"full","className":"section lab-teaser","layout":{"type":"constrained","wideSize":"1200px"}} -->
+	<div class="wp-block-group alignfull section lab-teaser">
+		<!-- wp:columns {"align":"wide","className":"lab-cols"} -->
+		<div class="wp-block-columns alignwide lab-cols">
+			<!-- wp:column {"width":"46%"} -->
+			<div class="wp-block-column" style="flex-basis:46%">
+				<!-- wp:paragraph {"className":"eyebrow eyebrow-brand"} --><p class="eyebrow eyebrow-brand">Wi-Fi Pro Lab</p><!-- /wp:paragraph -->
+				<!-- wp:heading {"className":"section-title"} --><h2 class="wp-block-heading section-title">See Wi-Fi, don't just read about it</h2><!-- /wp:heading -->
+				<!-- wp:paragraph --><p>Most Wi-Fi explanations are walls of text. The lab turns each concept into a working model: watch spatial streams separate in a MIMO channel, steer a beam toward a client, push a link budget until the modulation fails, or drag a router around a flat and watch coverage change on 2.4, 5 and 6 GHz.</p><!-- /wp:paragraph -->
+				<!-- wp:paragraph --><p>Every topic pairs the model with a guided walkthrough, the standards behind it with references to IEEE 802.11 and the Wi-Fi Alliance, and what it means on real equipment.</p><!-- /wp:paragraph -->
+				<!-- wp:buttons -->
+				<div class="wp-block-buttons">
+					<!-- wp:button {"className":"btn-primary-light"} -->
+					<div class="wp-block-button btn-primary-light"><a class="wp-block-button__link wp-element-button" href="/lab/">Open the lab</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+			</div>
+			<!-- /wp:column -->
+
+			<!-- wp:column {"width":"54%"} -->
+			<div class="wp-block-column" style="flex-basis:54%">
+				<!-- wp:html -->
+				<ul class="topic-grid" aria-label="Lab topics">
+					<li><span class="topic-n">01</span>WPA2 and WPA3 handshake</li>
+					<li><span class="topic-n">02</span>Roaming: 802.11k, v and r</li>
+					<li><span class="topic-n">03</span>Channels and bonding</li>
+					<li><span class="topic-n">04</span>QoS and WMM</li>
+					<li><span class="topic-n">05</span>MIMO and spatial streams</li>
+					<li><span class="topic-n">06</span>Beamforming and MU-MIMO</li>
+					<li><span class="topic-n">07</span>QAM and modulation</li>
+					<li><span class="topic-n">08</span>OFDM and OFDMA</li>
+					<li><span class="topic-n">09</span>Link budget and power</li>
+					<li><span class="topic-n">10</span>Indoor propagation</li>
+					<li><span class="topic-n">11</span>Spatial reuse and BSS colour</li>
+					<li><span class="topic-n">12</span>Antennas and VSWR</li>
+					<li><span class="topic-n">13</span>RF front-end and TSSI</li>
+					<li><span class="topic-n">14</span>Drivers, firmware and logs</li>
+				</ul>
+				<!-- /wp:html -->
+			</div>
+			<!-- /wp:column -->
+		</div>
+		<!-- /wp:columns -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- HISTORY TIMELINE -->
+	<!-- wp:group {"align":"full","className":"section","layout":{"type":"constrained","wideSize":"1200px"}} -->
+	<div class="wp-block-group alignfull section">
+		<!-- wp:paragraph {"align":"wide","className":"eyebrow eyebrow-brand"} --><p class="alignwide eyebrow eyebrow-brand">A short history</p><!-- /wp:paragraph -->
+		<!-- wp:heading {"align":"wide","className":"section-title"} --><h2 class="wp-block-heading alignwide section-title">Where Wi-Fi came from</h2><!-- /wp:heading -->
+
+		<!-- wp:group {"align":"wide","className":"timeline","layout":{"type":"default"}} -->
+		<div class="wp-block-group alignwide timeline">
+			<!-- wp:group {"className":"tl-item"} -->
+			<div class="wp-block-group tl-item">
+				<!-- wp:paragraph {"className":"tl-year"} --><p class="tl-year">1985</p><!-- /wp:paragraph -->
+				<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">The spectrum opens</h3><!-- /wp:heading -->
+				<!-- wp:paragraph --><p>The US regulator (FCC) allowed unlicensed use of the 900 MHz, 2.4 GHz and 5.8 GHz bands for spread-spectrum radios. Without this decision there would be no Wi-Fi.</p><!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+			<!-- wp:group {"className":"tl-item"} -->
+			<div class="wp-block-group tl-item">
+				<!-- wp:paragraph {"className":"tl-year"} --><p class="tl-year">Late 1980s</p><!-- /wp:paragraph -->
+				<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">The first wireless LANs</h3><!-- /wp:heading -->
+				<!-- wp:paragraph --><p>NCR, later part of AT&amp;T, developed WaveLAN in the Netherlands. Vic Hayes from that team went on to chair the IEEE 802.11 working group for a decade and is often called the father of Wi-Fi.</p><!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+			<!-- wp:group {"className":"tl-item"} -->
+			<div class="wp-block-group tl-item">
+				<!-- wp:paragraph {"className":"tl-year"} --><p class="tl-year">Early 1990s</p><!-- /wp:paragraph -->
+				<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">Solving the echo problem</h3><!-- /wp:heading -->
+				<!-- wp:paragraph --><p>In Australia, a CSIRO team led by John O'Sullivan tackled the biggest obstacle indoors: radio signals bouncing off walls and arriving as smeared echoes. Their patented approach, building on OFDM and error correction, became important to later Wi-Fi standards.</p><!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+			<!-- wp:group {"className":"tl-item"} -->
+			<div class="wp-block-group tl-item">
+				<!-- wp:paragraph {"className":"tl-year"} --><p class="tl-year">1997</p><!-- /wp:paragraph -->
+				<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">The first standard</h3><!-- /wp:heading -->
+				<!-- wp:paragraph --><p>IEEE 802.11 was published, offering 1 and 2 Mbps in the 2.4 GHz band.</p><!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+			<!-- wp:group {"className":"tl-item"} -->
+			<div class="wp-block-group tl-item">
+				<!-- wp:paragraph {"className":"tl-year"} --><p class="tl-year">1999</p><!-- /wp:paragraph -->
+				<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">Wi-Fi gets a name</h3><!-- /wp:heading -->
+				<!-- wp:paragraph --><p>802.11b raised speeds to 11 Mbps at 2.4 GHz, and 802.11a introduced OFDM at 54 Mbps in 5 GHz. The industry group that became the Wi-Fi Alliance formed the same year, and the name "Wi-Fi" was born.</p><!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+			<!-- wp:group {"className":"tl-item"} -->
+			<div class="wp-block-group tl-item">
+				<!-- wp:paragraph {"className":"tl-year"} --><p class="tl-year">2003 to 2013</p><!-- /wp:paragraph -->
+				<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">Faster and smarter</h3><!-- /wp:heading -->
+				<!-- wp:paragraph --><p>802.11g brought 54 Mbps to 2.4 GHz. 802.11n (now called Wi-Fi 4) added MIMO, sending several data streams at once. 802.11ac (Wi-Fi 5) moved to wider 5 GHz channels and added multi-user MIMO.</p><!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+			<!-- wp:group {"className":"tl-item"} -->
+			<div class="wp-block-group tl-item">
+				<!-- wp:paragraph {"className":"tl-year"} --><p class="tl-year">2019 onward</p><!-- /wp:paragraph -->
+				<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">Efficiency and new spectrum</h3><!-- /wp:heading -->
+				<!-- wp:paragraph --><p>Wi-Fi 6 introduced OFDMA to serve many devices at once, and Wi-Fi 6E opened the 6 GHz band. Wi-Fi 7, certified from 2024, adds 320 MHz channels, 4096-QAM and multi-link operation across bands at the same time.</p><!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:paragraph {"align":"wide","className":"timeline-close"} -->
+		<p class="alignwide timeline-close">Each generation solved a real problem: interference, echoes, crowded spectrum, too many devices. Understanding those problems is still the best way to troubleshoot Wi-Fi today.</p>
+		<!-- /wp:paragraph -->
+		<!-- wp:paragraph {"align":"wide","className":"sources"} -->
+		<p class="alignwide sources">Further reading: <a href="https://www.ieee802.org/11/" rel="noopener">IEEE 802.11 Working Group</a> · <a href="https://www.wi-fi.org/history" rel="noopener">Wi-Fi Alliance history</a> · <a href="https://csiropedia.csiro.au/wireless-lans/" rel="noopener">CSIRO: Wireless LANs</a></p>
+		<!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- LATEST POSTS -->
+	<!-- wp:group {"align":"full","className":"section section-alt","layout":{"type":"constrained","wideSize":"1200px"}} -->
+	<div class="wp-block-group alignfull section section-alt">
+		<!-- wp:heading {"align":"wide","className":"section-title"} -->
+		<h2 class="wp-block-heading alignwide section-title">Latest from the Library</h2>
+		<!-- /wp:heading -->
+		<!-- wp:query {"queryId":1,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":false},"align":"wide","className":"latest"} -->
+		<div class="wp-block-query alignwide latest">
+			<!-- wp:post-template {"layout":{"type":"grid","columnCount":3}} -->
+				<!-- wp:group {"className":"post-card","layout":{"type":"default"}} -->
+				<div class="wp-block-group post-card">
+					<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
+					<!-- wp:post-date {"className":"post-meta"} /-->
+					<!-- wp:post-title {"level":3,"isLink":true} /-->
+					<!-- wp:post-excerpt {"excerptLength":24} /-->
+				</div>
+				<!-- /wp:group -->
+			<!-- /wp:post-template -->
+		</div>
+		<!-- /wp:query -->
+		<!-- wp:paragraph {"align":"wide"} --><p class="alignwide"><a href="/library/">Everything in the Library →</a></p><!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- ABOUT -->
+	<!-- wp:group {"align":"full","className":"section","layout":{"type":"constrained","wideSize":"1200px"}} -->
+	<div class="wp-block-group alignfull section">
+		<!-- wp:columns {"align":"wide","className":"about-cols"} -->
+		<div class="wp-block-columns alignwide about-cols">
+			<!-- wp:column {"width":"35%"} -->
+			<div class="wp-block-column" style="flex-basis:35%">
+				<!-- wp:paragraph {"className":"eyebrow eyebrow-brand"} --><p class="eyebrow eyebrow-brand">About</p><!-- /wp:paragraph -->
+				<!-- wp:heading {"className":"section-title"} --><h2 class="wp-block-heading section-title">Who's behind this</h2><!-- /wp:heading -->
+			</div>
+			<!-- /wp:column -->
+			<!-- wp:column {"width":"65%"} -->
+			<div class="wp-block-column" style="flex-basis:65%">
+				<!-- wp:paragraph --><p>I'm Zeeshan, a Wi-Fi Architect working in pre-release quality engineering for home broadband equipment. My team tests routers and mesh systems before consumer release: roaming, band steering, mesh behaviour, IoT devices, long-term stability, firmware update recovery and interoperability with real clients.</p><!-- /wp:paragraph -->
+				<!-- wp:paragraph --><p>Outside work I build tools for measuring Wi-Fi quality of experience, and I write about the problems I see most often in the field. If you work in Wi-Fi, or just want to understand why your home Wi-Fi behaves the way it does, you're in the right place.</p><!-- /wp:paragraph -->
+				<!-- wp:paragraph --><p><a href="/about/">More about me →</a></p><!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:column -->
+		</div>
+		<!-- /wp:columns -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- CONTACT CTA -->
+	<!-- wp:group {"align":"full","className":"cta","layout":{"type":"constrained","wideSize":"1200px"}} -->
+	<div class="wp-block-group alignfull cta">
+		<!-- wp:heading {"textAlign":"center","className":"cta-title"} --><h2 class="wp-block-heading has-text-align-center cta-title">Get in touch</h2><!-- /wp:heading -->
+		<!-- wp:paragraph {"align":"center","className":"cta-text"} --><p class="has-text-align-center cta-text">Questions, corrections, or interested in Wi-Fi testing and consulting work? Email <a href="mailto:info@wifi-professionals.com">info@wifi-professionals.com</a>.</p><!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

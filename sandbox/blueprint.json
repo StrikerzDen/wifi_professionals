@@ -1,0 +1,31 @@
+{
+ "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+ "landingPage": "/lab/2-4-ghz/",
+ "preferredVersions": {
+  "php": "8.2",
+  "wp": "latest"
+ },
+ "steps": [
+  {
+   "step": "login"
+  },
+  {
+   "step": "installPlugin",
+   "pluginData": {
+    "resource": "wordpress.org/plugins",
+    "slug": "post-views-counter"
+   },
+   "options": {
+    "activate": true
+   }
+  },
+  {
+   "step": "runPHP",
+   "code": "<?php\nrequire_once '/wordpress/wp-load.php';\nswitch_theme('wifi-pro');\nupdate_option('blogname','Wi-Fi Professionals');\nupdate_option('blogdescription','Wi-Fi testing, troubleshooting and learning');\nupdate_option('permalink_structure','/%postname%/');\n$home = wp_insert_post(['post_title'=>'Home','post_name'=>'home','post_status'=>'publish','post_type'=>'page']);\n$blog = wp_insert_post(['post_title'=>'Library','post_name'=>'library','post_status'=>'publish','post_type'=>'page']);\nupdate_option('show_on_front','page'); update_option('page_on_front',$home); update_option('page_for_posts',$blog);\n$cats = ['Standards & Protocols','Analysis & Troubleshooting','RF & Design','Exam Prep','Home Wi-Fi','News'];\n$ids = [];\nforeach ($cats as $c) { $t = wp_insert_term($c,'category'); $ids[$c] = is_wp_error($t) ? get_cat_ID($c) : $t['term_id']; }\n$posts = [\n ['4-Way Handshake','Standards & Protocols',418482],\n ['Wireshark Display Filters','Analysis & Troubleshooting',137932],\n ['dBm to mW conversion cheat sheet','RF & Design',36951],\n ['IEEE 802.11 Reason codes to identify network issues','Analysis & Troubleshooting',33804],\n ['BSS Colouring or Spatial reuse','Standards & Protocols',27740],\n ['SSIDs overhead effect on channel utilisation','RF & Design',26545],\n ['Inverse Square Law','RF & Design',25183],\n ['Sticky Clients','Analysis & Troubleshooting',20003],\n ['CWNA Exam Preparation','Exam Prep',9000],\n ['Home Routers location','Home Wi-Fi',8000],\n ['Wi-Fi 6 certification is ready','News',7000],\n ['802.11 Deferral Process (Medium Access Method)','Standards & Protocols',6000],\n];\nglobal $wpdb; $tbl = $wpdb->prefix.'post_views';\nforeach ($posts as $i => $p) {\n  $id = wp_insert_post(['post_title'=>$p[0],'post_content'=>'<!-- wp:paragraph --><p>Sample body text for the layout preview. It includes a <a href=\"#\">link</a> and enough words to wrap across a couple of lines so we can judge spacing and the reading width of an article.</p><!-- /wp:paragraph --><!-- wp:heading --><h2 class=\"wp-block-heading\">A heading</h2><!-- /wp:heading --><!-- wp:table --><figure class=\"wp-block-table\"><table><thead><tr><th>Reason code</th><th>Meaning</th></tr></thead><tbody><tr><td>1</td><td>Unspecified reason</td></tr><tr><td>2</td><td>Previous authentication no longer valid</td></tr></tbody></table></figure><!-- /wp:table -->','post_excerpt'=>'A short sample excerpt describing the post so the list layout can be judged properly across a couple of lines.','post_status'=>'publish','post_category'=>[$ids[$p[1]]],'post_date'=>date('Y-m-d H:i:s', strtotime('-'.($i*30+3).' days'))]);\n  $wpdb->query($wpdb->prepare(\"INSERT INTO $tbl (id,type,period,count) VALUES (%d,4,'total',%d)\",$id,$p[2]));\n}\nflush_rewrite_rules();\n"
+  },
+  {
+   "step": "runPHP",
+   "code": "<?php\nrequire_once '/wordpress/wp-load.php';\n$pages = json_decode(file_get_contents('/wordpress/lab-content/lab-pages.json'), true);\n$ids = [];\nforeach ($pages as $pg) {\n  $id = wp_insert_post(['post_type'=>'page','post_title'=>$pg['title'],'post_name'=>$pg['slug'],'post_status'=>'publish','post_content'=>$pg['content'],'post_excerpt'=>$pg['excerpt'],'post_parent'=> $pg['parent'] ? $ids[$pg['parent']] : 0,'page_template'=> $pg['template'] ? $pg['template'] : 'default']);\n  $ids[$pg['slug']] = $id;\n}\nflush_rewrite_rules();\n"
+  }
+ ]
+}

@@ -1,0 +1,1056 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wi-Fi and RF concept lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF1F5;--panel:#FFFFFF;--ink:#172338;--muted:#56677F;--line:#CBD5E1;--soft:#E4EAF1;
+  --tx:#C9731F;--rx:#18839B;--v:#6F51BF;--g:#2F8A4F;--bad:#C2416B;--grid:#DCE3EB;
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1726;--panel:#14213A;--ink:#E6EDF6;--muted:#95A5BC;--line:#2A3B57;--soft:#1B2B47;
+    --tx:#F0A04B;--rx:#45BCD6;--v:#A58FEA;--g:#5CC27D;--bad:#EC6F95;--grid:#22324D;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1726;--panel:#14213A;--ink:#E6EDF6;--muted:#95A5BC;--line:#2A3B57;--soft:#1B2B47;
+  --tx:#F0A04B;--rx:#45BCD6;--v:#A58FEA;--g:#5CC27D;--bad:#EC6F95;--grid:#22324D;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Barlow,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--rx);outline-offset:2px}
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);max-width:1340px;margin:0 auto;min-height:100vh}
+.rail{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;max-height:100vh;overflow:auto;padding:28px 16px 28px 20px;border-right:1px solid var(--line)}
+.brand{font:700 26px/1.05 "Barlow Condensed",Barlow,sans-serif;letter-spacing:.2px;margin:0 0 6px}
+.brand-sub{color:var(--muted);font-size:14px;line-height:1.4;margin:0 0 22px}
+.grp{margin:0 0 20px}
+.grp h2{font:600 17px/1.2 "Barlow Condensed",Barlow,sans-serif;margin:0 0 2px}
+.grp p{margin:0 0 8px;color:var(--muted);font-size:13px}
+.navb{display:block;width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;padding:6px 10px;border-radius:0 6px 6px 0;cursor:pointer;font-size:15px;color:var(--ink)}
+.navb:hover{background:var(--soft)}
+.navb[aria-current="true"]{border-left-color:var(--tx);background:var(--soft);font-weight:600}
+.mobnav{display:none}
+main{padding:30px 32px 60px;min-width:0}
+h1{font:700 clamp(32px,4.4vw,48px)/1 "Barlow Condensed",Barlow,sans-serif;margin:0 0 10px;letter-spacing:.2px}
+.idea{font-size:19px;line-height:1.45;max-width:68ch;margin:0 0 20px;color:var(--ink)}
+.area-tag{color:var(--muted);font-size:14px;margin:0 0 6px}
+.bench{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 14px 16px}
+.stage{width:100%;position:relative}
+.stage canvas{display:block;border-radius:8px;background:var(--panel)}
+.controls{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.ctl{display:flex;flex-direction:column;gap:5px;min-width:180px;flex:1 1 200px;max-width:320px}
+.ctl.segc{flex:0 1 auto;max-width:none;min-width:0}
+.ctl-top{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--muted)}
+.ctl-top output{color:var(--ink);font-weight:600;white-space:nowrap}
+.ctl input[type=range]{width:100%;accent-color:var(--tx)}
+.tog{flex-direction:row;align-items:center;gap:8px;min-width:auto;flex:0 0 auto;font-size:15px;cursor:pointer}
+.tog input{width:18px;height:18px;accent-color:var(--tx)}
+.seg{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:8px;overflow:hidden;width:max-content;max-width:100%}
+.seg button{background:var(--panel);border:0;border-right:1px solid var(--line);padding:6px 11px;cursor:pointer;font-size:14px;white-space:nowrap}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel);font-weight:600}
+.btn{background:var(--ink);color:var(--panel);border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:14px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.reads{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.ro{border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--bg)}
+.rv{font:600 20px/1.15 "Barlow Condensed",Barlow,sans-serif}
+.rl{font-size:13px;color:var(--muted)}
+.ro[data-tone="good"] .rv{color:var(--g)}
+.ro[data-tone="warn"] .rv{color:var(--tx)}
+.ro[data-tone="bad"] .rv{color:var(--bad)}
+.extra:empty{display:none}
+.extra{margin-top:14px}
+.detail{border-left:3px solid var(--rx);padding:8px 14px;background:var(--bg);border-radius:0 8px 8px 0;font-size:15px}
+.detail h3{margin:0 0 4px;font:600 18px/1.2 "Barlow Condensed",Barlow,sans-serif}
+.detail p{margin:4px 0}
+.console{font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;max-height:220px;overflow:auto;white-space:pre-wrap;margin:0}
+.console .hl{color:var(--bad);font-weight:600}
+.notes{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;margin-top:28px}
+.notes h2{font:600 22px/1.2 "Barlow Condensed",Barlow,sans-serif;margin:0 0 8px}
+.notes p{margin:0 0 12px;max-width:72ch}
+.notes code{font-size:.9em;background:var(--soft);padding:1px 5px;border-radius:4px}
+.say{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel);margin-top:18px}
+.say p{font-size:15px}
+.hint{color:var(--muted);font-size:13px;margin:8px 0 0}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .rail{display:none}
+  .mobnav{display:block;position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 16px;border-bottom:1px solid var(--line);padding-top:calc(12px + env(safe-area-inset-top,0px));margin-top:calc(-1 * env(safe-area-inset-top,0px))}
+  .mobnav select{width:100%;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:16px}
+  .mobnav .brand{font-size:20px;margin-bottom:8px}
+  main{padding:20px 14px 48px}
+  .notes{grid-template-columns:1fr}
+  .ctl{max-width:none}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="mobnav"><div class="brand">Wi-Fi and RF concept lab</div><select id="mobsel" aria-label="Choose a concept"></select></div>
+<div class="app">
+  <nav class="rail" aria-label="Concepts">
+    <p class="brand">Wi-Fi and RF concept lab</p>
+    <p class="brand-sub">Every concept in the Wi-Fi engineer brief, as a working model you can poke at.</p>
+    <div id="navgroups"></div>
+  </nav>
+  <main>
+    <p class="area-tag" id="areatag"></p>
+    <h1 id="title"></h1>
+    <p class="idea" id="idea"></p>
+    <section class="bench" aria-label="Interactive model">
+      <div class="stage" id="stage"></div>
+      <div class="controls" id="controls"></div>
+      <div class="reads" id="reads"></div>
+      <div class="extra" id="extra"></div>
+    </section>
+    <div class="notes">
+      <section><h2>How it works</h2><div id="how"></div></section>
+      <section>
+        <h2>Why it matters on a CPE</h2><div id="why"></div>
+        <div class="say"><h2>Saying it in the interview</h2><div id="sayt"></div></div>
+      </section>
+    </div>
+  </main>
+</div>
+<script>
+(function(){
+"use strict";
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const K = {};
+function readColors(){const s=getComputedStyle(document.documentElement);['bg','panel','ink','muted','line','soft','tx','rx','v','g','bad','grid'].forEach(k=>K[k]=s.getPropertyValue('--'+k).trim());}
+readColors();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',readColors);
+new MutationObserver(readColors).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ---------- helpers ---------- */
+function el(tag,attrs,...kids){const e=document.createElement(tag);for(const [k,v] of Object.entries(attrs||{})){if(k==='class')e.className=v;else if(k==='html')e.innerHTML=v;else e.setAttribute(k,v);}for(const k of kids){if(k!=null)e.append(k);}return e;}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lin=d=>Math.pow(10,d/10);
+const dB=x=>10*Math.log10(x);
+function hexA(h,a){h=(h||'#888').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')';}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function setFont(ctx,size,w,cond){ctx.font=(w||500)+' '+size+'px '+(cond?'"Barlow Condensed",':'')+'Barlow,"Segoe UI",sans-serif';}
+function text(ctx,s,x,y,o){o=o||{};setFont(ctx,o.size||12,o.w||500,o.cond);ctx.fillStyle=o.color||K.ink;ctx.textAlign=o.align||'left';ctx.textBaseline=o.base||'alphabetic';ctx.fillText(s,x,y);}
+function line(ctx,x1,y1,x2,y2,c,w,dash){ctx.strokeStyle=c;ctx.lineWidth=w||1;ctx.setLineDash(dash||[]);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);}
+function circle(ctx,x,y,r,fill,stroke,w){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=w||1;ctx.stroke();}}
+function rrect(ctx,x,y,w,h,r){ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else ctx.rect(x,y,w,h);}
+function along(pts,t){let L=0;const seg=[];for(let i=1;i<pts.length;i++){const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(d);L+=d;}let s=t*L;for(let i=0;i<seg.length;i++){if(s<=seg[i]){const f=seg[i]?s/seg[i]:0;return[pts[i][0]+(pts[i+1][0]-pts[i][0])*f,pts[i][1]+(pts[i+1][1]-pts[i][1])*f];}s-=seg[i];}return pts[pts.length-1];}
+function arrow(ctx,x1,y1,x2,y2,c,w){line(ctx,x1,y1,x2,y2,c,w||1.5);const a=Math.atan2(y2-y1,x2-x1);ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-9*Math.cos(a-0.4),y2-9*Math.sin(a-0.4));ctx.lineTo(x2-9*Math.cos(a+0.4),y2-9*Math.sin(a+0.4));ctx.closePath();ctx.fill();}
+
+function makeCanvas(host,h){
+  const c=document.createElement('canvas');host.appendChild(c);
+  const ctx=c.getContext('2d');const s={c,ctx,W:0,H:0};
+  s.fit=function(){const w=Math.max(260,host.clientWidth);const hh=typeof h==='function'?h(w):h;if(w===s.W&&hh===s.H)return false;const d=window.devicePixelRatio||1;s.W=w;s.H=hh;c.width=Math.round(w*d);c.height=Math.round(hh*d);c.style.width=w+'px';c.style.height=hh+'px';ctx.setTransform(d,0,0,d,0,0);return true;};
+  s.fit();
+  s.pt=function(e){const r=c.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};};
+  return s;
+}
+let raf=0;
+function run(fn){cancelAnimationFrame(raf);let last=performance.now();const f=t=>{const dt=Math.min(0.05,(t-last)/1000)*(RM?0.4:1);last=t;try{fn(dt,t/1000);}catch(e){console.error(e);return;}raf=requestAnimationFrame(f);};raf=requestAnimationFrame(f);}
+
+function Controls(host){return{
+  slider(label,min,max,step,val,fmt,on){const out=el('output');const inp=el('input',{type:'range',min:min,max:max,step:step,'aria-label':label});inp.value=val;const upd=()=>{out.textContent=fmt(+inp.value);};inp.addEventListener('input',()=>{upd();on(+inp.value);});upd();host.append(el('label',{class:'ctl'},el('span',{class:'ctl-top'},el('span',{},label),out),inp));return{inp,set v(x){inp.value=x;upd();},get v(){return +inp.value;},refresh:upd};},
+  seg(label,opts,val,on){const g=el('div',{class:'seg',role:'group','aria-label':label});const btns=opts.map(o=>{const v=Array.isArray(o)?o[0]:o,t=Array.isArray(o)?o[1]:o;const b=el('button',{type:'button','aria-pressed':String(v===val)},String(t));b.addEventListener('click',()=>{btns.forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');on(v);});return b;});g.append(...btns);host.append(el('div',{class:'ctl segc'},el('span',{class:'ctl-top'},el('span',{},label)),g));},
+  toggle(label,val,on){const inp=el('input',{type:'checkbox'});inp.checked=val;inp.addEventListener('change',()=>on(inp.checked));host.append(el('label',{class:'ctl tog'},inp,el('span',{},label)));return inp;},
+  button(label,on,ghost){const b=el('button',{type:'button',class:'btn'+(ghost?' ghost':'')},label);b.addEventListener('click',()=>on(b));host.append(b);return b;}
+};}
+function Reads(host){const map={};return{
+  add(key,label){const v=el('div',{class:'rv'},'–');const box=el('div',{class:'ro'},v,el('div',{class:'rl'},label));host.append(box);map[key]={v,box};},
+  set(key,val,tone){const m=map[key];if(!m)return;if(m.v.textContent!==val)m.v.textContent=val;const t=tone||'';if(m.box.dataset.tone!==t)m.box.dataset.tone=t;}
+};}
+
+/* Shared Wi-Fi 6 MCS table: rate per spatial stream at 80 MHz, 0.8 us GI; TX EVM limits from 802.11ax */
+const MCS=[
+ {snr:5,m:0,mod:'BPSK 1/2',r:36,evm:-5},{snr:8,m:1,mod:'QPSK 1/2',r:72,evm:-10},{snr:11,m:2,mod:'QPSK 3/4',r:108,evm:-13},
+ {snr:14,m:3,mod:'16-QAM 1/2',r:144,evm:-16},{snr:17,m:4,mod:'16-QAM 3/4',r:216,evm:-19},{snr:21,m:5,mod:'64-QAM 2/3',r:288,evm:-22},
+ {snr:23,m:6,mod:'64-QAM 3/4',r:324,evm:-25},{snr:25,m:7,mod:'64-QAM 5/6',r:360,evm:-27},{snr:29,m:8,mod:'256-QAM 3/4',r:432,evm:-30},
+ {snr:31,m:9,mod:'256-QAM 5/6',r:480,evm:-32},{snr:34,m:10,mod:'1024-QAM 3/4',r:540,evm:-35},{snr:36,m:11,mod:'1024-QAM 5/6',r:600,evm:-35}];
+function mcsForSnr(s){let b=null;for(const x of MCS)if(s>=x.snr)b=x;return b;}
+function mcsForEvm(e){let b=null;for(const x of MCS)if(e<=x.evm)b=x;return b;}
+
+const GROUPS={wifi:['Wi-Fi and networking','Area 1 of the brief: standards, security, roaming, channels, QoS'],rf:['RF engineering','Area 2: modulation, MIMO, power, antennas, front-end'],emb:['Embedded systems','Area 3: drivers, firmware and logs']};
+const MODULES=[];
+function mod(d){MODULES.push(d);}
+
+/* =====================================================================
+   WI-FI AND NETWORKING
+   ===================================================================== */
+
+/* ---------- Handshake ---------- */
+mod({id:'handshake',group:'wifi',title:'Joining a network: WPA2 and WPA3',
+idea:'Before any data moves, the client and router prove they share the same secret without ever sending it, then derive fresh encryption keys for this session.',
+how:[
+'Discovery comes first: the router advertises itself in beacons, and the client may actively probe. Then comes an open "authentication" exchange that is a legacy leftover and proves nothing, followed by association where the router gives the client an AID and both agree on the cipher.',
+'In WPA2-Personal the passphrase and SSID are turned into a PMK (pairwise master key) with PBKDF2. Both sides already hold it. The 4-way handshake swaps two random numbers, ANonce from the router and SNonce from the client, and both mix PMK + ANonce + SNonce + MAC addresses into the PTK, the per-session key. Message 2 carries a MIC computed with that key: if the passphrase is wrong, the MIC check fails at the router.',
+'Message 3 delivers the GTK (the group key for broadcast and multicast), encrypted. Message 4 confirms, and both sides install keys. From then on frames are encrypted with CCMP (AES).',
+'WPA3-Personal replaces the "everyone derives the PMK from the passphrase" step with SAE, a Dragonfly key exchange done in the authentication frames (Commit then Confirm). The PMK is unique per session, a captured handshake cannot be brute-forced offline, and an old capture can\'t be decrypted later (forward secrecy). Protected Management Frames (802.11w) are mandatory, so deauth spoofing stops working.'],
+why:[
+'Most "can\'t connect" defects live here. Wrong password shows as a 4-way handshake timeout (reason 15) after repeated M1s. Transition mode (WPA2/WPA3 mixed) is a classic interop trap: some clients pick SAE, fail, and never fall back.',
+'Group key rekey (a new GTK sent periodically) breaking multicast or sleeping IoT devices is another CPE favourite.'],
+say:[
+'"Association first, then the 4-way handshake derives the PTK from PMK plus both nonces. M2\'s MIC proves the client has the right PMK, M3 delivers the GTK. WPA3 swaps PSK-derived PMK for SAE in the auth frames, which gives offline-attack resistance and forward secrecy, and makes PMF mandatory."',
+'"When I debug it I look at where the sequence stops: no M2 means the client rejected M1, repeated M1s then deauth reason 15 is usually the wrong key, and SAE failing at Confirm is the WPA3 equivalent."'],
+build({stage,controls,read,extra}){
+  let mode='wpa2',cur=0,playing=false,acc=0;
+  const common1=[
+    {f:'A',n:'Beacon',d:'SSID, supported rates, RSN element listing WPA2/WPA3 and CCMP.',fail:'Client never sees the network: wrong band, hidden SSID, or channel not supported by the client (for example DFS or 6 GHz).'},
+    {f:'C',n:'Probe request',d:'Client asks "who is out there?" on each channel it scans.',fail:'Clients scanning passively on DFS channels can take seconds to find you.'},
+    {f:'A',n:'Probe response',d:'Same content as the beacon, sent directly to the client.',fail:'Band steering may deliberately withhold this on 2.4 GHz to push dual-band clients to 5 GHz.'}];
+  const openAuth=[
+    {f:'C',n:'Authentication (open)',d:'Legacy step. No secret is checked here in WPA2.',fail:'Rarely fails, but a router at its client limit or a MAC filter rejects here.'},
+    {f:'A',n:'Authentication success',d:'Router accepts the request.',fail:''}];
+  const sae=[
+    {f:'C',n:'SAE Commit',d:'Client sends its Dragonfly commit scalar and element, derived from the password.',fail:'Clients without WPA3 support never send this.'},
+    {f:'A',n:'SAE Commit',d:'Router sends its own commit. Neither side has revealed the password.',fail:'Anti-clogging token may be demanded under load.'},
+    {f:'C',n:'SAE Confirm',d:'Client proves it computed the same shared secret.',fail:'Wrong password fails here, before association.'},
+    {f:'A',n:'SAE Confirm',d:'Router confirms. Both now hold a fresh, unique PMK.',fail:''}];
+  const assoc=[
+    {f:'C',n:'Association request',d:'Capabilities (HT/VHT/HE, streams), chosen cipher and AKM in the RSN element.',fail:'Capability mismatch, or the AKM in RSNXE not matching in transition mode.'},
+    {f:'A',n:'Association response',d:'Status success and an AID (association ID).',fail:'Status codes like 17 (AP full) or 30 (PMF: try again later) show up here.'}];
+  const four=[
+    {f:'A',n:'EAPOL M1: ANonce',d:'Router sends its random number. Client now has everything to compute the PTK.',fail:'If M1 repeats several times the client is not answering or not accepting it.'},
+    {f:'C',n:'EAPOL M2: SNonce + MIC',d:'Client sends its random number and a MIC computed with the new PTK.',fail:'MIC check fails at the router when the passphrase is wrong.'},
+    {f:'A',n:'EAPOL M3: GTK + MIC',d:'Router proves it has the PTK and delivers the encrypted group key.',fail:'Timeout here often points to a client driver bug or poor RF on the downlink.'},
+    {f:'C',n:'EAPOL M4: ACK',d:'Client confirms. Both install the keys.',fail:'Missing M4 then deauth reason 15 (4-way handshake timeout).'},
+    {f:'B',n:'Encrypted data',d:'Unicast with the PTK, broadcast and multicast with the GTK, using CCMP (AES).',fail:'Later: GTK rekey failures break multicast while unicast still works.'}];
+  const steps=()=>mode==='wpa2'?common1.concat(openAuth,assoc,four):common1.concat(sae,assoc,four);
+  const S=makeCanvas(stage,()=>Math.max(300,70+steps().length*30));
+  controls.seg('Security',[['wpa2','WPA2-Personal'],['wpa3','WPA3-Personal (SAE)']],'wpa2',v=>{mode=v;cur=0;});
+  controls.button('Previous',()=>{cur=Math.max(0,cur-1);playing=false;},true);
+  controls.button('Next step',()=>{cur=Math.min(steps().length-1,cur+1);playing=false;});
+  const pb=controls.button('Play sequence',b=>{playing=!playing;if(playing&&cur>=steps().length-1)cur=0;b.textContent=playing?'Pause':'Play sequence';});
+  read.add('step','Step');read.add('cli','Client holds');read.add('ap','Router holds');read.add('enc','Encryption');
+  const det=el('div',{class:'detail'});extra.append(det);let lastShown=-1,lastMode='';
+  run((dt,t)=>{
+    const st=steps();cur=Math.min(cur,st.length-1);
+    if(playing){acc+=dt;if(acc>1.4){acc=0;if(cur<st.length-1)cur++;else{playing=false;pb.textContent='Play sequence';}}}
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const lx=Math.max(70,W*0.18),rx=W-Math.max(70,W*0.18);
+    text(ctx,'Client (STA)',lx,22,{align:'center',size:15,w:600,cond:true});
+    text(ctx,'Router (AP)',rx,22,{align:'center',size:15,w:600,cond:true});
+    line(ctx,lx,32,lx,H-8,K.line,2);line(ctx,rx,32,rx,H-8,K.line,2);
+    st.forEach((s,i)=>{
+      const y=56+i*30;const a=i<=cur?1:0.18;ctx.globalAlpha=a;
+      const isSae=s.n.indexOf('SAE')===0,isE=s.n.indexOf('EAPOL')===0;
+      const col=i===cur?K.tx:(isSae?K.v:isE?K.rx:K.muted);
+      if(s.f==='B'){arrow(ctx,lx+4,y,rx-4,y,col,2);arrow(ctx,rx-4,y+6,lx+4,y+6,col,2);}
+      else if(s.f==='C')arrow(ctx,lx+4,y,rx-4,y,col,i===cur?2.4:1.5);else arrow(ctx,rx-4,y,lx+4,y,col,i===cur?2.4:1.5);
+      text(ctx,s.n,(lx+rx)/2,y-5,{align:'center',size:13,w:i===cur?600:500,color:i===cur?K.ink:K.muted});
+      ctx.globalAlpha=1;
+      if(i===cur&&s.f!=='B'){const p=(t*0.7)%1;const x=s.f==='C'?lx+(rx-lx)*p:rx-(rx-lx)*p;circle(ctx,x,y,4.5,K.tx);}
+    });
+    // keys
+    const nS=st.findIndex(s=>s.n.indexOf('EAPOL M1')===0);
+    const keysC=[mode==='wpa2'?'PMK (from passphrase)':(cur>=5?'PMK (from SAE)':'password only')];
+    const keysA=[mode==='wpa2'?'PMK (from passphrase)':(cur>=6?'PMK (from SAE)':'password only')];
+    if(cur>=nS){keysC.push('ANonce','SNonce','PTK');keysA.push('ANonce');}
+    if(cur>=nS+1){keysA.push('SNonce','PTK (MIC verified)');}
+    if(cur>=nS+2){keysC.push('GTK');keysA.push('GTK');}
+    read.set('step',(cur+1)+' of '+st.length+': '+st[cur].n);
+    read.set('cli',keysC.join(', '));read.set('ap',keysA.join(', '));
+    read.set('enc',cur>=nS+3?'Keys installed (CCMP)':'Not yet','');
+    read.set('enc',cur>=nS+3?'Keys installed':'Not yet',cur>=nS+3?'good':'warn');
+    if(lastShown!==cur||lastMode!==mode){lastShown=cur;lastMode=mode;const s=st[cur];det.innerHTML='';det.append(el('h3',{},s.n),el('p',{},s.d));if(s.fail)det.append(el('p',{},el('b',{},'Where it fails: '),s.fail));}
+  });
+}});
+
+/* ---------- Roaming ---------- */
+mod({id:'roaming',group:'wifi',title:'Roaming: 802.11k, v and r',
+idea:'The client, not the router, decides when to move to another access point. 802.11k, v and r make that decision better informed, earlier and faster.',
+how:[
+'A client stays on its current AP until the signal falls below its own internal threshold, often very low (around -75 to -80 dBm). Hanging on too long is called a sticky client: it keeps a weak link at a low MCS while a much better AP is nearby.',
+'<b>802.11k</b> (neighbour reports): the AP tells the client which neighbouring APs exist and on which channels, so the client scans 2 or 3 channels instead of all of them. Scan time drops from hundreds of milliseconds to tens.',
+'<b>802.11v</b> (BSS Transition Management): the AP can send a BTM request suggesting the client move, for example when RSSI drops below the AP\'s own threshold. The client may still ignore it, which is very common.',
+'<b>802.11r</b> (Fast BSS Transition): the key hierarchy is cached so the client can reauthenticate in the reassociation frames instead of doing a full 4-way handshake, or full 802.1X with a RADIUS server on enterprise networks. Reauth time drops from 40 to 300+ ms down to around 10 ms.',
+'Move the client yourself, or press play. Turn on v and watch the roam happen earlier. Turn on k and r and watch the outage shrink.'],
+why:[
+'In a mesh CPE system, roaming quality is what the customer actually feels walking around the home: frozen video calls, dropped VoIP, games lagging in one room.',
+'Steering logic and BTM timing are vendor-specific and often tuned in firmware. Some clients misbehave with 11r enabled, which is why many ISPs ship it off or in mixed mode.'],
+say:[
+'"Roaming is client-driven. 11k gives a neighbour list to cut scan time, 11v lets the AP nudge the client with a BTM request, 11r removes the full reauthentication by pre-deriving keys. Together they move the roam earlier and cut the gap from roughly 300 ms to under 50, which is the difference between an audible dropout and nothing on a voice call."',
+'"When I test it I measure the RSSI at which the client actually left, total outage from last data frame to first data frame on the new AP, and whether BTM requests were accepted or rejected."'],
+build({stage,controls,read}){
+  const S=makeCanvas(stage,w=>w<600?380:400);
+  let k=false,v=false,r=false,sec='psk',thr=-78,pos=4,dir=1,playing=!RM,ap=0,last=null,marks=[];
+  const L=30,APX=[3,27];const rs=d=>-25-38*Math.log10(Math.max(1,d));
+  const pb=controls.button(playing?'Pause walk':'Walk the client',b=>{playing=!playing;b.textContent=playing?'Pause walk':'Walk the client';});
+  const ps=controls.slider('Client position',0,30,0.1,pos,x=>x.toFixed(1)+' m',x=>{pos=x;playing=false;pb.textContent='Walk the client';});
+  controls.slider('Client roam threshold',-85,-62,1,thr,x=>x+' dBm',x=>{thr=x;});
+  controls.toggle('802.11k',k,x=>k=x);controls.toggle('802.11v',v,x=>v=x);controls.toggle('802.11r',r,x=>r=x);
+  controls.seg('Security',[['psk','WPA2/3 Personal'],['ent','Enterprise (802.1X)']],'psk',x=>sec=x);
+  read.add('ap','Connected to');read.add('rssi','Signal now');read.add('rate','PHY rate now (2 streams, 80 MHz)');read.add('out','Last roam outage');
+  run(dt=>{
+    if(playing){pos+=dir*dt*2.2;if(pos>L-1){pos=L-1;dir=-1;}if(pos<1){pos=1;dir=1;}ps.v=pos;}
+    const r1=rs(Math.abs(pos-APX[0])),r2=rs(Math.abs(pos-APX[1]));const cur=ap?r2:r1,oth=ap?r1:r2;
+    let reason=null;if(v&&cur<-70&&oth>cur+5)reason='Router suggested it (802.11v BTM)';else if(cur<thr&&oth>cur+5)reason='Client decided on its own';
+    if(reason){const scan=k?40:280,auth=r?12:(sec==='psk'?45:320),re=8;last={scan,auth,re,total:scan+auth+re,at:cur,reason};marks.push(pos);if(marks.length>8)marks.shift();ap=1-ap;}
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const X=p=>34+p/L*(W-68);
+    // corridor
+    const cy=52;rrect(ctx,X(0)-8,cy-20,X(L)-X(0)+16,40,10);ctx.fillStyle=K.soft;ctx.fill();
+    text(ctx,'A home, 30 m end to end',X(0),cy-28,{size:12,color:K.muted});
+    [0,1].forEach(i=>{const x=X(APX[i]);const c=i?K.rx:K.tx;rrect(ctx,x-16,cy-10,32,20,5);ctx.fillStyle=c;ctx.fill();text(ctx,'AP'+(i+1),x,cy+4,{align:'center',size:12,w:600,color:K.panel});});
+    marks.forEach(m=>line(ctx,X(m),cy+14,X(m),cy+22,K.bad,2));
+    const px=X(pos);const ax=X(APX[ap]);line(ctx,px,cy,ax,cy,ap?K.rx:K.tx,2,[5,4]);
+    circle(ctx,px,cy,9,K.ink);text(ctx,'Client',px,cy+34,{align:'center',size:12,color:K.muted});
+    // last roam timeline
+    const ty=cy+58;text(ctx,'Last roam',X(0),ty-6,{size:13,w:600});
+    if(last){
+      const sc=(W-X(0)-40)/450;let x=X(0);
+      [['Scan',last.scan,K.v],['Reauth',last.auth,K.tx],['Reassoc',last.re,K.rx]].forEach(([n,ms,c])=>{const w=Math.max(3,ms*sc);ctx.fillStyle=c;ctx.fillRect(x,ty,w,14);if(w>58)text(ctx,n+' '+ms+' ms',x+4,ty+11,{size:11,color:K.panel,w:600});x+=w;});
+      const verdict=last.total<60?'unnoticeable on a call':last.total<150?'a brief click on a call':'an audible dropout on a call';
+      text(ctx,last.total+' ms total, '+verdict+'. '+last.reason+' at '+Math.round(last.at)+' dBm.',X(0),ty+32,{size:12,color:K.muted});
+    } else text(ctx,'Walk the client to trigger a roam.',X(0),ty+11,{size:12,color:K.muted});
+    // chart
+    const top=ty+52,bot=H-26;const Y=d=>top+(-30-d)/60*(bot-top);
+    for(let d=-30;d>=-90;d-=10){line(ctx,X(0),Y(d),X(L),Y(d),K.grid,1);text(ctx,d+'',X(0)-4,Y(d)+4,{align:'right',size:10,color:K.muted});}
+    text(ctx,'Signal (dBm) along the home',X(0),top-8,{size:12,color:K.muted});
+    [[APX[0],K.tx],[APX[1],K.rx]].forEach(([a,c])=>{ctx.strokeStyle=c;ctx.lineWidth=2.2;ctx.beginPath();for(let p=0;p<=L;p+=0.25){const yy=Y(Math.min(-30,rs(Math.abs(p-a))));p?ctx.lineTo(X(p),yy):ctx.moveTo(X(p),yy);}ctx.stroke();});
+    line(ctx,X(0),Y(thr),X(L),Y(thr),K.bad,1.5,[6,4]);text(ctx,'client threshold '+thr,X(L),Y(thr)-4,{align:'right',size:11,color:K.bad});
+    if(v){line(ctx,X(0),Y(-70),X(L),Y(-70),K.v,1.5,[2,4]);text(ctx,'router BTM trigger -70',X(L),Y(-70)-4,{align:'right',size:11,color:K.v});}
+    line(ctx,X(0),Y(-67),X(L),Y(-67),K.g,1,[1,5]);text(ctx,'-67: good for voice and video',X(0)+4,Y(-67)-4,{size:11,color:K.g});
+    line(ctx,px,top,px,bot,K.ink,1);circle(ctx,px,Y(Math.min(-30,cur)),5,ap?K.rx:K.tx);
+    const m=mcsForSnr(cur+88);
+    read.set('ap','AP'+(ap+1));read.set('rssi',Math.round(cur)+' dBm',cur>-67?'good':cur>-75?'warn':'bad');
+    read.set('rate',m?(m.r*2)+' Mbps':'Link fails',m&&m.m>=7?'good':m?'warn':'bad');
+    read.set('out',last?last.total+' ms':'none yet',last?(last.total<60?'good':last.total<150?'warn':'bad'):'');
+  });
+}});
+
+/* ---------- Channels ---------- */
+mod({id:'channels',group:'wifi',title:'Channels and channel bonding',
+idea:'Bonding neighbouring 20 MHz channels into 40, 80, 160 or 320 MHz multiplies speed, but you collide with more neighbours and lose range.',
+how:[
+'Every Wi-Fi channel is built from 20 MHz blocks. A wider channel carries more subcarriers, so the PHY rate scales almost linearly: 80 MHz is about 4 times 20 MHz.',
+'The cost: the noise floor rises about 3 dB every time the width doubles, because the receiver collects noise across more spectrum. At the cell edge that 3 to 9 dB can be the difference between 256-QAM and 16-QAM.',
+'Wider channels also overlap more neighbours. A transmission only goes out when the whole width is idle, and any neighbour on any of your 20 MHz sub-channels makes you wait (contention) or causes interference. Drag the neighbour count up and compare 80 and 160 MHz.',
+'In 2.4 GHz, each channel is about 22 MHz wide but channels are only 5 MHz apart, so only 1, 6 and 11 avoid each other. 40 MHz in 2.4 GHz uses most of the band. In 5 GHz the middle channels (52 to 140 in Europe) need DFS: the router must listen for radar and leave the channel if it hears one. In 6 GHz there are many clean channels and room for 320 MHz in Wi-Fi 7.'],
+why:[
+'In a dense apartment block (typical in Ho Chi Minh City), 160 MHz on the same 36 to 64 range as everyone else can be slower in practice than a clean 80 MHz.',
+'Auto channel selection (ACS), DFS behaviour and channel change after radar are all firmware features ISPs test heavily, because a bad choice affects every customer.'],
+say:[
+'"Doubling width roughly doubles the PHY rate but costs about 3 dB of noise floor and doubles the chance of overlapping a neighbour. So I choose width by environment: 20 MHz on 2.4, 80 as a safe default in dense 5 GHz, 160 when DFS channels are clean, and 160 or 320 in 6 GHz where spectrum is empty."',
+'"I\'d also check primary channel alignment with neighbours, because overlapping primaries share contention fairly while a neighbour sitting on your secondary causes hidden interference."'],
+build({stage,controls,read}){
+  const S=makeCanvas(stage,w=>w<600?280:260);
+  const CH5=[36,40,44,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140];
+  const CH6=Array.from({length:24},(_,i)=>1+4*i);
+  let band='5',width=80,pi=0,nb=8;
+  const raw={20:287,40:574,80:1201,160:2402,320:4804};
+  controls.seg('Band',[['2.4','2.4 GHz'],['5','5 GHz'],['6','6 GHz']],'5',v=>{band=v;pi=0;});
+  controls.seg('Channel width',[[20,'20'],[40,'40'],[80,'80'],[160,'160'],[320,'320 MHz']],80,v=>{width=v;pi=0;});
+  const pos=controls.slider('Channel choice',0,10,1,0,x=>'option '+(x+1),x=>{pi=x;});
+  controls.slider('Neighbouring networks',0,24,1,nb,x=>String(x),x=>{nb=x;});
+  read.add('w','Width in use');read.add('blocks','Separate channels at this width');read.add('nf','Noise floor');read.add('ov','Neighbours you overlap');read.add('eff','Your rate: raw vs shared');
+  function blocks(chs,n){const out=[];for(let i=0;i+n<=chs.length;i+=n){const g=chs.slice(i,i+n);if(g.every((c,j)=>j===0||c-g[j-1]===4))out.push(i);}return out;}
+  run(()=>{
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    let w=width,note='';
+    if(band==='2.4'&&w>40){w=40;note='2.4 GHz only supports 20 or 40 MHz.';}
+    if(band==='5'&&w>160){w=160;note='320 MHz exists only in 6 GHz (Wi-Fi 7).';}
+    const r=rng(42);let overl=0,nBlocks=0;
+    if(band==='2.4'){
+      const maxc=w===40?9:13;pos.inp.max=maxc-1;pi=Math.min(pi,maxc-1);pos.refresh&&pos.refresh();
+      const c=1+pi;const lo=c-2,hi=w===40?c+6:c+2;
+      const X=ch=>30+(ch+1)/16*(W-60);const base=H-50;
+      for(let ch=1;ch<=13;ch++)text(ctx,String(ch),X(ch),base+18,{align:'center',size:11,color:K.muted});
+      line(ctx,X(-1),base,X(15),base,K.line,1);
+      const hump=(a,b,hgt,col,wid,fill)=>{ctx.beginPath();ctx.moveTo(X(a),base);ctx.quadraticCurveTo(X((a+b)/2),base-hgt*2,X(b),base);if(fill){ctx.fillStyle=fill;ctx.fill();}ctx.strokeStyle=col;ctx.lineWidth=wid;ctx.stroke();};
+      for(let i=0;i<nb;i++){const pick=[1,6,11,1,6,11,3,9,13,4][Math.floor(r()*10)];const o=pick+2>lo&&pick-2<hi;if(o)overl++;hump(pick-2,pick+2,50+r()*40,o?K.bad:K.rx,1.4);}
+      hump(lo,hi,110,K.tx,3,hexA(K.tx,0.15));
+      text(ctx,'Your channel '+c+(w===40?' + '+(c+4):''),X((lo+hi)/2),base-128,{align:'center',size:13,w:600});
+      nBlocks=w===40?1:3;
+      text(ctx,'Each 2.4 GHz channel spreads about 22 MHz but they sit only 5 MHz apart.',30,22,{size:12,color:K.muted});
+    } else {
+      const chs=band==='5'?CH5:CH6;const n=w/20;const bl=blocks(chs,n);nBlocks=bl.length;
+      pos.inp.max=Math.max(0,bl.length-1);pi=Math.min(pi,bl.length-1);
+      const start=bl[pi]||0;const cw=(W-40)/chs.length;const y=H-80;
+      chs.forEach((ch,i)=>{const x=20+i*cw;const dfs=band==='5'&&ch>=52;rrect(ctx,x+1,y,cw-2,30,3);ctx.fillStyle=dfs?hexA(K.v,0.12):K.soft;ctx.fill();if(cw>18||i%2===0)text(ctx,String(ch),x+cw/2,y+48,{align:'center',size:cw>24?11:9,color:K.muted});});
+      if(band==='5'){const x0=20+4*cw;text(ctx,'DFS: radar detection required',x0,y+66,{size:11,color:K.v});}
+      rrect(ctx,20+start*cw+1,y-4,n*cw-2,38,5);ctx.strokeStyle=K.tx;ctx.lineWidth=3;ctx.stroke();ctx.fillStyle=hexA(K.tx,0.18);ctx.fill();
+      text(ctx,'Your '+w+' MHz channel',20+(start+n/2)*cw,y-12,{align:'center',size:13,w:600});
+      const stack={};
+      for(let i=0;i<nb;i++){let idx;if(band==='5'&&r()<0.7)idx=Math.floor(r()*4);else idx=Math.floor(r()*chs.length);const o=idx>=start&&idx<start+n;if(o)overl++;stack[idx]=(stack[idx]||0)+1;const yy=y-28-stack[idx]*10;circle(ctx,20+idx*cw+cw/2,yy,4,o?K.bad:K.rx);}
+      text(ctx,'Dots are neighbouring networks. Red ones sit inside your channel and share or interfere with your airtime.',20,20,{size:12,color:K.muted});
+    }
+    if(note)text(ctx,note,W-20,20,{align:'right',size:12,color:K.bad});
+    const nf=-94+dB(w/20);const eff=Math.round(raw[w]/(1+overl));
+    read.set('w',w+' MHz');read.set('blocks',String(nBlocks),nBlocks>=3?'good':nBlocks>=2?'warn':'bad');
+    read.set('nf',nf.toFixed(0)+' dBm ('+(nf+94>0?'-'+(nf+94).toFixed(0)+' dB range':'best range')+')',w<=40?'good':w<=80?'warn':'bad');
+    read.set('ov',String(overl),overl===0?'good':overl<3?'warn':'bad');
+    read.set('eff',raw[w]+' → ~'+eff+' Mbps',eff>=raw[w]*0.7?'good':'warn');
+  });
+}});
+
+/* ---------- QoS / WMM ---------- */
+mod({id:'qos',group:'wifi',title:'QoS: WMM access categories',
+idea:'Wi-Fi gives voice and video a statistical head start in the race for airtime, so a busy download does not freeze a video call.',
+how:[
+'Wi-Fi is shared airtime. Before every transmission a device waits an idle gap (AIFS) plus a random backoff picked from a contention window (CW). The shortest wait wins the channel.',
+'WMM (802.11e) creates four queues, called access categories: Voice (VO), Video (VI), Best effort (BE) and Background (BK). Voice waits AIFSN 2 and picks backoff from 0 to 3 slots. Best effort waits AIFSN 3 and picks from 0 to 15. Background waits 7. So voice nearly always wins.',
+'Packets are sorted into queues by their DSCP marking in the IP header (for example EF, DSCP 46, maps to voice), translated to an 802.11 user priority. If apps or the router don\'t mark traffic, everything lands in best effort and WMM has nothing to prioritise.',
+'Turn WMM off and push the download load up: everything shares one queue and the voice latency climbs with it. Turn WMM on and voice stays low even when best effort is overloaded.'],
+why:[
+'This links directly to the QoE work: a Zoom call failing during a large download is very often a queueing problem (bufferbloat), not a signal problem.',
+'Things to verify on a CPE: DSCP to UP mapping table, WMM parameters advertised in beacons, and whether the WAN side re-marks or strips DSCP.'],
+say:[
+'"WMM gives four access categories with different AIFS and contention windows, so voice and video statistically win airtime. It only works if traffic is marked correctly: DSCP to user priority mapping matters, and I\'d check it end to end because some routers or ISPs strip DSCP on the WAN."'],
+build({stage,controls,read}){
+  const S=makeCanvas(stage,w=>w<600?300:280);
+  const AC=[{id:'VO',name:'Voice',aifs:2,cw:3,rate:50,c:'g'},{id:'VI',name:'Video',aifs:2,cw:7,rate:150,c:'rx'},{id:'BE',name:'Best effort (download)',aifs:3,cw:15,rate:300,c:'tx'},{id:'BK',name:'Background',aifs:7,cw:15,rate:100,c:'v'}];
+  let wmm=true,load=300;const q=[[],[],[],[]],lat=[0,0,0,0],share=[0,0,0,0];let drops=0,now=0,busy=0,lastAc=-1;
+  controls.toggle('WMM enabled',true,x=>{wmm=x;});
+  controls.slider('Download load (best effort)',0,900,10,load,x=>x+' packets/s',x=>{load=x;});
+  controls.button('Reset queues',()=>{q.forEach(a=>a.length=0);lat.fill(0);drops=0;},true);
+  read.add('vo','Voice latency');read.add('vi','Video latency');read.add('be','Download latency');read.add('dr','Packets dropped (queues full)');
+  const ri=n=>Math.floor(Math.random()*(n+1));
+  run(dt=>{
+    const dts=dt*0.5;now+=dts;
+    AC.forEach((a,i)=>{const rate=i===2?load:a.rate;const n=Math.floor(rate*dts+Math.random());for(let k=0;k<n;k++){if(q[i].length>150){drops++;continue;}q[i].push(now-Math.random()*dts);}});
+    let guard=0;
+    while(busy<now&&guard++<5000){
+      let earliest=Infinity;q.forEach(a=>{if(a.length&&a[0]<earliest)earliest=a[0];});
+      if(earliest===Infinity){busy=now;break;}
+      if(earliest>busy)busy=earliest;if(busy>=now)break;
+      let win=-1,bo=Infinity;
+      if(wmm){q.forEach((a,i)=>{if(a.length&&a[0]<=busy){const b=(AC[i].aifs+ri(AC[i].cw))*9e-6+i*1e-9;if(b<bo){bo=b;win=i;}}});}
+      else{let t0=Infinity;q.forEach((a,i)=>{if(a.length&&a[0]<=busy&&a[0]<t0){t0=a[0];win=i;}});bo=(3+ri(15))*9e-6;}
+      if(win<0)break;
+      const t=q[win].shift();const end=busy+bo+0.0011;const l=(end-t)*1000;lat[win]=lat[win]?lat[win]*0.97+l*0.03:l;busy=end;lastAc=win;
+      share.forEach((s,i)=>share[i]=s*0.995+(i===win?0.005:0));
+    }
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const laneH=(H-40)/4,chX=W-120;
+    text(ctx,wmm?'Four queues compete for airtime':'WMM off: all traffic waits in one line',16,18,{size:13,w:600});
+    AC.forEach((a,i)=>{
+      const y=30+i*laneH;const c=K[a.c];
+      text(ctx,a.name,16,y+laneH/2+4,{size:13});
+      text(ctx,wmm?('AIFSN '+a.aifs+', CW 0-'+a.cw):'shared queue',16,y+laneH/2+19,{size:11,color:K.muted});
+      const x1=chX-20,cell=Math.max(4,Math.min(10,(x1-170)/40));const n=Math.min(q[i].length,Math.floor((x1-170)/cell));
+      for(let k=0;k<n;k++){ctx.fillStyle=c;ctx.fillRect(x1-(k+1)*cell,y+laneH/2-7,cell-2,14);}
+      if(q[i].length>n)text(ctx,'+'+(q[i].length-n),170,y+laneH/2+4,{size:11,color:K.bad,w:600});
+      line(ctx,x1+2,y+laneH/2,chX,y+laneH/2+0.01,K.line,1);
+      ctx.fillStyle=hexA(c,0.9);ctx.fillRect(chX+10,y+laneH/2-5,Math.max(1,share[i]*95),10);
+    });
+    rrect(ctx,chX,30,1,H-40,0);
+    text(ctx,'Airtime share',chX+10,24,{size:11,color:K.muted});
+    const f=v=>v<1?'<1 ms':v.toFixed(v<10?1:0)+' ms';
+    read.set('vo',f(lat[0]),lat[0]<30?'good':lat[0]<100?'warn':'bad');
+    read.set('vi',f(lat[1]),lat[1]<50?'good':lat[1]<150?'warn':'bad');
+    read.set('be',f(lat[2]),lat[2]<100?'good':'warn');
+    read.set('dr',String(drops),drops?'warn':'good');
+  });
+}});
+
+/* =====================================================================
+   RF ENGINEERING
+   ===================================================================== */
+
+/* ---------- MIMO ---------- */
+mod({id:'mimo',group:'rf',title:'MIMO and spatial streams',
+idea:'Several antennas send different data at the same moment on the same channel. The receiver pulls the streams apart using the unique way each path bounces around the room.',
+how:[
+'Each transmit antenna (or more exactly, each spatial stream) carries its own slice of the data. All streams share the same frequency at the same time, so every receive antenna hears all of them mixed together.',
+'Because each transmit-to-receive path bounces off different walls and furniture, each antenna pair has its own amplitude and phase shift. That grid of values is the channel matrix <b>H</b>: one row per receive antenna, one column per transmit antenna. The receiver measures H from training fields (LTFs) at the start of every packet, then inverts it to separate the streams.',
+'You can never have more streams than min(TX antennas, RX antennas). "4×4:4" means 4 transmit chains, 4 receive chains, 4 streams. A phone is usually 2×2, so a 4×4 router still gives it at most 2 streams; the spare router antennas are used for beamforming instead.',
+'Multipath is what makes MIMO work. In open space with a single direct path, all paths look nearly identical, H is "ill-conditioned" and the extra streams can\'t be separated. Drag multipath down and watch streams fail.',
+'Diversity mode sends the same data from every antenna instead. You don\'t get more speed, but the signal becomes more robust (array and diversity gain). Rate control in the firmware picks streams and MCS packet by packet based on conditions.'],
+why:[
+'More streams is the main way Wi-Fi multiplies speed without more spectrum: 2 streams is roughly double 1 stream at the same SNR.',
+'Each extra stream needs more SNR and decorrelated paths, so at the edge of coverage clients fall back to 1 stream. In logs, watch NSS drop as RSSI falls.',
+'Inside a CPE, antenna placement and isolation decide how independent the chains are. Badly placed antennas, a dead chain, or bad per-chain calibration can leave a client stuck at 1 stream even close to the router.'],
+say:[
+'"MIMO sends independent spatial streams on the same channel; the receiver separates them by estimating the channel matrix H from the LTFs. Streams are capped by min(Tx, Rx) and in practice by channel rank, which depends on multipath richness and antenna decorrelation."',
+'"If I see NSS stuck at 1 at short range in a test, I don\'t suspect coverage. I suspect antenna correlation, a dead chain, or bad calibration on one chain, and I\'d check per-chain RSSI in the driver stats."'],
+build({stage,controls,read}){
+  const S=makeCanvas(stage,w=>w<600?340:380);
+  let ntx=2,nrx=2,scat=70,mode='mux',scatterers=[],packets=[],timer=0,boff=0;
+  function reset(){packets=[];const r=rng(7);const n=Math.round(scat/100*9);scatterers=[];for(let i=0;i<n;i++)scatterers.push({u:0.25+r()*0.5,v:0.05+r()*0.9});}
+  controls.seg('Router antennas (TX)',[1,2,3,4],2,v=>{ntx=v;reset();});
+  controls.seg('Client antennas (RX)',[1,2,3,4],2,v=>{nrx=v;reset();});
+  controls.slider('Multipath in the room',0,100,1,scat,v=>v<20?'open field':v<55?'some reflections':'rich indoor',v=>{scat=v;reset();});
+  controls.seg('Mode',[['mux','Spatial multiplexing'],['div','Diversity (same data)']],'mux',v=>{mode=v;reset();});
+  read.add('cfg','Configuration');read.add('ss','Usable streams');read.add('rate','Peak PHY rate (80 MHz)');read.add('gain','Robustness gain');
+  reset();
+  const bits='10110011101001011001110100101101';
+  run(dt=>{
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const cols=[K.tx,K.rx,K.v,K.g];
+    const mn=Math.min(ntx,nrx);
+    const usable=mode==='div'?1:Math.max(1,Math.round((mn-1)*clamp((scat-10)/60,0,1))+1);
+    const streams=mode==='div'?1:mn;
+    const top=78,bot=H-22,apX=Math.max(64,W*0.12),rxX=W-Math.max(150,W*0.3);
+    const ty=i=>top+(bot-top)*(i+1)/(ntx+1),ry=j=>top+(bot-top)*(j+1)/(nrx+1);
+    const sp=s=>[apX+(rxX-apX)*s.u,top+(bot-top)*s.v];
+    // data bits
+    boff+=dt*6;text(ctx,'Data',12,24,{size:12,color:K.muted,w:600});
+    for(let k=0;k<bits.length;k++){const x=50+k*10;if(x>W-10)break;const idx=Math.floor(k+boff);const ch=bits[idx%bits.length];text(ctx,ch,x,24,{size:13,w:600,color:mode==='div'?cols[0]:cols[idx%streams]});}
+    text(ctx,mode==='div'?'Every antenna sends the same bits':'Bits are dealt out round-robin, one colour per stream',50,42,{size:11,color:K.muted});
+    // paths
+    for(let i=0;i<ntx;i++)for(let j=0;j<nrx;j++)line(ctx,apX,ty(i),rxX,ry(j),hexA(K.muted,0.25),1);
+    scatterers.forEach(s=>{const[x,y]=sp(s);ctx.fillStyle=hexA(K.muted,0.55);ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/4);ctx.fillRect(-5,-5,10,10);ctx.restore();});
+    if(scatterers.length)text(ctx,'reflectors (walls, furniture)',apX+(rxX-apX)/2,bot+16,{align:'center',size:11,color:K.muted});
+    // spawn
+    timer+=dt;if(timer>0.32){timer=0;const act=mode==='div'?ntx:streams;for(let i=0;i<act;i++)for(let j=0;j<nrx;j++){const via=scatterers.length&&Math.random()<0.55?Math.floor(Math.random()*scatterers.length):-1;packets.push({s:mode==='div'?0:i,i,j,via,t:0});}if(packets.length>500)packets.splice(0,packets.length-500);}
+    packets.forEach(p=>p.t+=dt*0.75);packets=packets.filter(p=>p.t<1&&p.i<ntx&&p.j<nrx&&(p.via<scatterers.length));
+    packets.forEach(p=>{const a=[apX,ty(p.i)],b=[rxX,ry(p.j)];const pts=p.via>=0?[a,sp(scatterers[p.via]),b]:[a,b];const[x,y]=along(pts,p.t);circle(ctx,x,y,3.5,cols[p.s]);});
+    // router
+    rrect(ctx,apX-46,top-6,30,bot-top+12,6);ctx.fillStyle=K.soft;ctx.fill();ctx.strokeStyle=K.line;ctx.stroke();
+    text(ctx,'Router',apX-31,top-14,{align:'center',size:12,w:600});
+    for(let i=0;i<ntx;i++){const act=mode==='div'||i<streams;line(ctx,apX-16,ty(i),apX,ty(i),K.ink,2);circle(ctx,apX,ty(i),5,act?(mode==='div'?cols[0]:cols[i]):K.line,K.ink,1);}
+    // client
+    rrect(ctx,rxX+6,top-6,22,bot-top+12,6);ctx.fillStyle=K.soft;ctx.fill();ctx.strokeStyle=K.line;ctx.stroke();
+    text(ctx,'Client',rxX+17,top-14,{align:'center',size:12,w:600});
+    for(let j=0;j<nrx;j++)circle(ctx,rxX,ry(j),5,K.panel,K.ink,1.5);
+    // decoder
+    const dx=rxX+40,dw=W-dx-10;rrect(ctx,dx,top-6,dw,bot-top+12,8);ctx.strokeStyle=K.line;ctx.lineWidth=1;ctx.stroke();
+    text(ctx,mode==='div'?'Receiver combines':'Receiver inverts H',dx+10,top+12,{size:13,w:600});
+    if(mode==='div'){text(ctx,'Same data from',dx+10,top+40,{size:12});text(ctx,ntx*nrx+' paths, added up',dx+10,top+56,{size:12});text(ctx,'More robust, not faster',dx+10,top+80,{size:12,color:K.g,w:600});}
+    else for(let s=0;s<streams;s++){const y=top+38+s*Math.min(40,(bot-top-40)/Math.max(1,streams));const ok=s<usable;rrect(ctx,dx+10,y-10,14,14,3);ctx.fillStyle=cols[s];ctx.fill();text(ctx,'Stream '+(s+1),dx+30,y+1,{size:12,w:600});text(ctx,ok?'separated':'can\'t separate',dx+30,y+15,{size:11,color:ok?K.g:K.bad,w:600});}
+    if(mode==='mux'&&ntx>nrx)text(ctx,'Spare router antennas add beamforming gain, not streams.',12,H-6,{size:11,color:K.muted});
+    read.set('cfg',ntx+'×'+nrx+':'+(mode==='div'?1:usable));
+    read.set('ss',mode==='div'?'1 (same data)':usable+' of '+mn,mode==='div'?'':usable<mn?'warn':'good');
+    read.set('rate',mode==='div'?'~600 Mbps':'~'+usable*600+' Mbps',usable>1?'good':'');
+    read.set('gain',mode==='div'?'+'+dB(ntx*nrx).toFixed(1)+' dB':(ntx>nrx?'+'+dB(ntx/nrx).toFixed(1)+' dB steering':'used for speed'),mode==='div'?'good':'');
+  });
+}});
+
+/* ---------- Beamforming ---------- */
+mod({id:'beamforming',group:'rf',title:'Beamforming and MU-MIMO',
+idea:'By sending the same signal from every antenna with slightly different timing (phase), the waves add up toward the client and cancel elsewhere.',
+how:[
+'Each antenna radiates the same symbol, but with a phase offset. In the target direction all waves arrive in step and add up: with N antennas the power gain is about 10·log10(N) dB, so 4 antennas give about 6 dB. In other directions they partly cancel, creating side lobes and nulls.',
+'The router needs to know the channel to pick those phases. In explicit beamforming (802.11ac/ax) it runs a sounding: an NDP Announcement, then a Null Data Packet the client measures, then the client sends back a compressed feedback matrix (V, as angles). The router turns that into a steering matrix and uses it for the next data frames.',
+'More antennas give a narrower, stronger beam. Feedback goes stale when the client moves, so sounding repeats every few tens of milliseconds.',
+'MU-MIMO uses the same feedback to serve two or more clients at once on different beams. The key trick is null steering: shape the beam to client A so it puts a null exactly where client B is. Turn on the second client and null steering to see the leak drop.'],
+why:[
+'3 to 6 dB of beamforming gain at range is one or two MCS steps, which is a big throughput difference at the edge of a room.',
+'Sounding and TxBF link handling are firmware features and a real defect source. The 6 GHz reconnect loop found in the CPE log work (repeated <code>wlc_txbf_delete_link failed</code> for one client) is exactly this layer breaking.',
+'Antenna geometry in the enclosure changes how well arrays can steer; this is where RF design and system behaviour meet.'],
+say:[
+'"Beamforming applies per-antenna phase weights so the signals combine coherently at the client, giving roughly 10·log10(N) dB of array gain. It depends on sounding: NDPA, NDP, then the client\'s compressed V-matrix feedback. MU-MIMO reuses that feedback to steer nulls toward other users, so feedback accuracy and sounding interval directly limit MU gains."',
+'"I found a 6 GHz client reconnect loop that traced to TxBF link deletion failing repeatedly in the driver, which is a good example of beamforming being a stability issue, not just a throughput feature."'],
+build({stage,controls,read}){
+  const S=makeCanvas(stage,w=>w<600?330:400);
+  let n=4,a1=20,mu=false,a2=-35,zf=false,snd=0,sndT=0;
+  const steer=(N,deg)=>{const s=Math.sin(deg*Math.PI/180);return Array.from({length:N},(_,k)=>({re:Math.cos(Math.PI*k*s),im:Math.sin(Math.PI*k*s)}));};
+  const dotH=(a,b)=>{let re=0,im=0;for(let k=0;k<a.length;k++){re+=a[k].re*b[k].re+a[k].im*b[k].im;im+=a[k].re*b[k].im-a[k].im*b[k].re;}return{re,im};};
+  const norm2=w=>w.reduce((s,x)=>s+x.re*x.re+x.im*x.im,0);
+  const G=(w,deg)=>{const d=dotH(w,steer(w.length,deg));return(d.re*d.re+d.im*d.im)/norm2(w);};
+  const weights=(ta,tb,useZf)=>{const A=steer(n,ta);if(!useZf||n<2)return A;const B=steer(n,tb);const c=dotH(B,A);const cr=c.re/n,ci=c.im/n;return A.map((x,k)=>({re:x.re-(cr*B[k].re-ci*B[k].im),im:x.im-(cr*B[k].im+ci*B[k].re)}));};
+  controls.seg('Router antennas',[1,2,4,8],4,v=>n=v);
+  controls.slider('Client A direction',-60,60,1,a1,x=>x+'°',x=>a1=x);
+  controls.toggle('Second client (MU-MIMO)',mu,x=>mu=x);
+  controls.slider('Client B direction',-60,60,1,a2,x=>x+'°',x=>a2=x);
+  controls.toggle('Null steering',zf,x=>zf=x);
+  controls.button('Run a sounding',()=>{snd=1;sndT=0;});
+  read.add('g','Gain toward client A');read.add('bw','Beam width');read.add('leak','Leak toward client B');read.add('snd','Sounding');
+  const names=['NDP Announcement','NDP (training)','Client feedback (V matrix)','Steered data'];
+  run(dt=>{
+    if(snd){sndT+=dt;if(sndT>1.2){sndT=0;snd++;if(snd>4)snd=0;}}
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const ox=W/2,oy=H-34,R=Math.min(W/2-40,H-80);
+    const P=(r,deg)=>[ox+r*Math.sin(deg*Math.PI/180),oy-r*Math.cos(deg*Math.PI/180)];
+    [0.25,0.5,0.75,1].forEach(f=>{ctx.beginPath();ctx.arc(ox,oy,R*f,-Math.PI,0);ctx.strokeStyle=K.grid;ctx.lineWidth=1;ctx.stroke();});
+    for(let d=-90;d<=90;d+=30){const[x,y]=P(R,d);line(ctx,ox,oy,x,y,K.grid,1);text(ctx,d+'°',...P(R+14,d),{align:'center',size:10,color:K.muted,base:'middle'});}
+    const showBeam=snd===0||snd===4;
+    const w1=weights(a1,a2,mu&&zf),w2=weights(a2,a1,zf);
+    const plot=(w,col,alpha)=>{ctx.beginPath();for(let d=-90;d<=90;d+=0.5){const r=R*Math.sqrt(G(w,d)/n);const[x,y]=P(r,d);d===-90?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.fillStyle=hexA(col,0.18*alpha);ctx.fill();ctx.strokeStyle=hexA(col,alpha);ctx.lineWidth=2;ctx.stroke();};
+    if(snd===2){[0.3,0.55,0.8].forEach(f=>{ctx.beginPath();ctx.arc(ox,oy,R*f*((sndT/1.2)+0.2),-Math.PI,0);ctx.strokeStyle=hexA(K.v,0.5);ctx.stroke();});}
+    plot(w1,K.tx,showBeam?1:0.25);if(mu)plot(w2,K.rx,showBeam?1:0.25);
+    // array
+    for(let k=0;k<n;k++)circle(ctx,ox+(k-(n-1)/2)*9,oy+6,3.5,K.ink);
+    text(ctx,'Router antenna array',ox,oy+24,{align:'center',size:11,color:K.muted});
+    const client=(deg,lab,col)=>{const[x,y]=P(R*1.0,deg);circle(ctx,x,y,10,col);text(ctx,lab,x,y+4,{align:'center',size:12,w:700,color:K.panel});};
+    client(a1,'A',K.tx);if(mu)client(a2,'B',K.rx);
+    if(snd===3){const[x,y]=P(R,a1);arrow(ctx,x,y+12,ox,oy-14,K.v,2);}
+    // sounding strip
+    names.forEach((nm,i)=>{const x=12,y=18+i*17;circle(ctx,x+5,y-4,5,snd===i+1?K.v:K.panel,K.line);text(ctx,nm,x+16,y,{size:12,color:snd===i+1?K.ink:K.muted,w:snd===i+1?600:500});});
+    const gA=dB(G(w1,a1));const hp=n>1?(101.5/n):360;
+    read.set('g','+'+gA.toFixed(1)+' dB',gA>5?'good':gA>2?'warn':'');
+    read.set('bw',n>1?'~'+hp.toFixed(0)+'°':'no beam (omni)');
+    if(mu){const l=10*Math.log10(Math.max(1e-6,G(w1,a2))/Math.max(1e-6,G(w1,a1)));read.set('leak',l<-40?'< -40 dB':l.toFixed(1)+' dB',l<-20?'good':l<-10?'warn':'bad');}else read.set('leak','single client','');
+    read.set('snd',snd?names[snd-1]:'feedback current',snd?'warn':'good');
+  });
+}});
+
+/* ---------- QAM ---------- */
+mod({id:'qam',group:'rf',title:'QAM: how bits ride on a wave',
+idea:'Each symbol is one point on a grid of amplitude and phase. Bigger grids carry more bits per symbol, but the points sit closer together, so noise pushes them into the wrong square.',
+how:[
+'A radio symbol has two knobs: amplitude and phase. Plot them as I (in-phase) and Q (quadrature) and every allowed combination becomes a dot in the constellation. BPSK has 2 dots (1 bit), QPSK 4 (2 bits), 16-QAM 16 (4 bits), up to 1024-QAM in Wi-Fi 6 (10 bits) and 4096-QAM in Wi-Fi 7 (12 bits).',
+'The receiver sees each symbol land near, not on, its dot because of noise. It picks the nearest dot (the decision grid). If noise pushes the symbol across a boundary, those bits are wrong. More dots in the same power means the boundaries are closer, so you need more SNR.',
+'EVM (error vector magnitude) measures how far received symbols land from ideal, in dB. Roughly, EVM ≈ -SNR. 1024-QAM needs EVM better than -35 dB, which means both a clean channel and a very clean transmitter.',
+'Wi-Fi pairs each modulation with a coding rate (1/2, 3/4, 5/6). Together they form an MCS index. Rate control walks MCS up and down as SNR changes.'],
+why:[
+'Every extra 6 dB of SNR roughly buys one more doubling of QAM order. That is why antenna gain, beamforming and noise floor matter so much.',
+'High-order QAM is limited by the router\'s own transmitter as much as by the channel. A noisy PA or bad calibration caps the MCS even at 1 metre, and EVM tests in the lab catch that.'],
+say:[
+'"QAM maps bits to points in the I/Q plane. Higher order carries more bits but shrinks the spacing, so the required SNR rises about 6 dB for each step from 16 to 64 to 256 to 1024. Transmit EVM must also be better than the target, around -35 dB for 1024-QAM, so the PA has to be backed off for the top MCS."'],
+build({stage,controls,read}){
+  const MODS=[['BPSK',2,2,1,4],['QPSK',4,2,2,7],['16-QAM',16,4,4,13],['64-QAM',64,8,8,20],['256-QAM',256,16,16,27],['1024-QAM',1024,32,32,33],['4096-QAM',4096,64,64,38]];
+  let mi=4,snr=30,pts=[];
+  const S=makeCanvas(stage,w=>w<600?w+220:400);
+  controls.seg('Modulation',MODS.map((m,i)=>[i,m[0]]),mi,v=>{mi=v;pts=[];});
+  controls.slider('Signal to noise ratio (SNR)',0,45,0.5,snr,x=>x.toFixed(1)+' dB',x=>{snr=x;pts=[];});
+  read.add('b','Bits per symbol');read.add('e','Symbols decoded wrong');read.add('evm','EVM (approx.)');read.add('v','Verdict');
+  function gen(){const[,M,LI,LQ]=MODS[mi];const sc=M===2?1:1/Math.sqrt(2*(M-1)/3);const sig=Math.sqrt(1/(2*lin(snr)));const g=()=>{let u=0,v=0;while(!u)u=Math.random();v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+    const iI=Math.floor(Math.random()*LI),iQ=Math.floor(Math.random()*LQ);const xi=(2*iI-(LI-1))*sc,yi=LQ>1?(2*iQ-(LQ-1))*sc:0;const x=xi+sig*g(),y=yi+sig*g();
+    const dI=clamp(Math.round((x/sc+(LI-1))/2),0,LI-1),dQ=LQ>1?clamp(Math.round((y/sc+(LQ-1))/2),0,LQ-1):0;return{x,y,err:dI!==iI||dQ!==iQ};}
+  run(()=>{
+    for(let k=0;k<(pts.length<1200?400:40);k++){pts.push(gen());}if(pts.length>1200)pts.splice(0,pts.length-1200);
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const narrow=W<600;const P=narrow?W-20:Math.min(H-24,W*0.5);const x0=10,y0=narrow?10:(H-P)/2;
+    const[name,M,LI,LQ,req]=MODS[mi];const sc=M===2?1:1/Math.sqrt(2*(M-1)/3);const R=1.7;
+    const X=x=>x0+(x+R)/(2*R)*P,Y=y=>y0+(R-y)/(2*R)*P;
+    rrect(ctx,x0,y0,P,P,8);ctx.fillStyle=K.bg;ctx.fill();
+    line(ctx,X(-R),Y(0),X(R),Y(0),K.line,1);line(ctx,X(0),Y(-R),X(0),Y(R),K.line,1);
+    text(ctx,'I',X(R)-10,Y(0)-6,{size:12,color:K.muted,w:600});text(ctx,'Q',X(0)+6,Y(R)+14,{size:12,color:K.muted,w:600});
+    if(M<=256){for(let k=1;k<LI;k++){const b=(2*k-LI)*sc;line(ctx,X(b),Y(-R),X(b),Y(R),hexA(K.muted,0.25),1);}if(LQ>1)for(let k=1;k<LQ;k++){const b=(2*k-LQ)*sc;line(ctx,X(-R),Y(b),X(R),Y(b),hexA(K.muted,0.25),1);}}
+    let err=0;pts.forEach(p=>{if(p.err)err++;ctx.fillStyle=p.err?hexA(K.bad,0.85):hexA(K.rx,0.55);const s=M>=1024?1.4:2;ctx.fillRect(X(p.x)-s/2,Y(p.y)-s/2,s,s);});
+    if(M<=1024)for(let a=0;a<LI;a++)for(let b=0;b<LQ;b++){const x=(2*a-(LI-1))*sc,y=LQ>1?(2*b-(LQ-1))*sc:0;const r=M>=256?1.6:3.5;circle(ctx,X(x),Y(y),r,null,K.ink,1.2);}
+    text(ctx,name+': '+M+' points',x0+10,y0+20,{size:13,w:600});
+    // required SNR ladder
+    const bx=narrow?10:x0+P+28,by=narrow?y0+P+26:y0+10,bw=narrow?W-20:W-bx-12;
+    text(ctx,'Minimum SNR to decode reliably',bx,by,{size:13,w:600});
+    const scl=v=>bw*0.32+(v/45)*(bw*0.66);
+    MODS.forEach((m,i)=>{const y=by+16+i*24;text(ctx,m[0],bx,y+12,{size:12,w:i===mi?700:500,color:i===mi?K.ink:K.muted});
+      rrect(ctx,bx+bw*0.32,y+2,(m[4]/45)*(bw*0.66),14,3);ctx.fillStyle=snr>=m[4]?hexA(K.g,0.7):hexA(K.muted,0.25);ctx.fill();
+      text(ctx,m[4]+' dB',bx+scl(m[4])+4,y+13,{size:11,color:K.muted});});
+    const sx=bx+scl(snr);line(ctx,sx,by+10,sx,by+16+MODS.length*24,K.tx,2);text(ctx,'you: '+snr.toFixed(0)+' dB',sx,by+30+MODS.length*24,{align:'center',size:12,w:600,color:K.tx});
+    const ser=err/pts.length*100;
+    read.set('b',String(Math.log2(M)));read.set('e',ser<0.05?'0%':ser.toFixed(ser<1?2:1)+'%',ser<1?'good':ser<10?'warn':'bad');
+    read.set('evm','-'+snr.toFixed(0)+' dB');read.set('v',snr>=req?'Clean link':snr>=req-4?'Marginal: retries':'Fails: drop MCS',snr>=req?'good':snr>=req-4?'warn':'bad');
+  });
+}});
+
+/* ---------- OFDM / OFDMA ---------- */
+mod({id:'ofdma',group:'rf',title:'OFDM and OFDMA',
+idea:'OFDM gives one client the whole channel per transmission. OFDMA, new in Wi-Fi 6, slices the channel into resource units so several clients share one transmission.',
+how:[
+'OFDM splits a channel into hundreds of narrow subcarriers (312.5 kHz apart in Wi-Fi 5, 78.125 kHz in Wi-Fi 6). Narrow subcarriers resist multipath echoes, and each carries its own QAM symbol.',
+'Before Wi-Fi 6, every transmission used all subcarriers for one client. Each transmission also pays a fixed cost: contention, preamble, and an acknowledgement. For a small packet like a VoIP frame or a game update, most of that airtime is overhead.',
+'OFDMA groups subcarriers into resource units (RUs). A 20 MHz channel can be split into up to nine 26-tone RUs. The router schedules several clients into one transmission and pays the overhead once. In the uplink the router sends a Trigger frame telling each client which RU to use.',
+'Try many users with small packets: OFDMA serves everyone in far fewer time slots. With large packets the gain shrinks, because each client fills the channel anyway.'],
+why:[
+'OFDMA mostly helps latency and efficiency with many busy clients, for example a home full of IoT devices, phones and a video call, not peak speed tests.',
+'It depends on the scheduler in the router firmware and on client support. Many deployments see little OFDMA in practice, which is worth verifying with captures instead of assuming.'],
+say:[
+'"OFDM uses many narrow subcarriers for multipath resilience. OFDMA in 802.11ax splits them into RUs so the AP can serve multiple stations in one PPDU, and with Trigger frames in uplink too. Its win is latency and efficiency for many small flows, not peak throughput, and I\'d verify actual RU allocation in a capture rather than trusting the feature flag."'],
+build({stage,controls,read}){
+  const S=makeCanvas(stage,w=>w<600?320:300);
+  let mode='ofdma',users=6,bytes=200,play=0;
+  controls.seg('Method',[['ofdm','OFDM (Wi-Fi 5)'],['ofdma','OFDMA (Wi-Fi 6)']],'ofdma',v=>mode=v);
+  controls.slider('Clients with data',1,8,1,users,x=>String(x),x=>users=x);
+  controls.slider('Packet size per client',100,1500,50,bytes,x=>x+' bytes',x=>bytes=x);
+  read.add('slots','Time slots used');read.add('last','Last client served after');read.add('eff','Airtime doing useful work');
+  run(dt=>{
+    play=(play+dt*1.2)%1;
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const cols=[K.tx,K.rx,K.v,K.g,K.bad,K.ink,K.muted,K.tx];
+    const d=Math.ceil(bytes/170);const RU=9;
+    const cells=[];// columns: each array of 9 entries: -2 overhead, -1 empty, k user
+    if(mode==='ofdm'){for(let u=0;u<users;u++){cells.push(new Array(RU).fill(-2));let left=d;while(left>0){const col=new Array(RU).fill(-1);for(let r=0;r<RU&&left>0;r++,left--)col[r]=u;cells.push(col);}}}
+    else{cells.push(new Array(RU).fill(-2));let col=new Array(RU).fill(-1),r=0;for(let u=0;u<users;u++){for(let k=0;k<d;k++){col[r++]=u;if(r===RU){cells.push(col);col=new Array(RU).fill(-1);r=0;}}}if(r>0)cells.push(col);}
+    const nC=cells.length;const gx=60,gy=36,gw=W-gx-16,gh=H-gy-44;const cw=Math.min(46,gw/Math.max(nC,10)),ch=gh/RU;
+    text(ctx,'Frequency (resource units)',12,gy-12,{size:12,color:K.muted});
+    for(let r=0;r<RU;r++)text(ctx,'RU '+(r+1),gx-8,gy+r*ch+ch/2+4,{align:'right',size:10,color:K.muted});
+    let used=0;
+    cells.forEach((col,c)=>col.forEach((v,r)=>{const x=gx+c*cw,y=gy+r*ch;
+      if(v===-2){ctx.fillStyle=hexA(K.muted,0.35);ctx.fillRect(x+1,y+1,cw-2,ch-2);}
+      else if(v===-1){ctx.strokeStyle=K.line;ctx.lineWidth=1;ctx.strokeRect(x+1.5,y+1.5,cw-3,ch-3);}
+      else{used++;ctx.fillStyle=hexA(cols[v],0.85);ctx.fillRect(x+1,y+1,cw-2,ch-2);if(cw>16&&ch>12)text(ctx,String(v+1),x+cw/2,y+ch/2+4,{align:'center',size:10,w:700,color:K.panel});}}));
+    const px=gx+play*nC*cw;line(ctx,px,gy-4,px,gy+gh+4,K.ink,1.5);
+    text(ctx,'Time →',gx,gy+gh+18,{size:12,color:K.muted});
+    rrect(ctx,gx+70,gy+gh+8,12,12,2);ctx.fillStyle=hexA(K.muted,0.35);ctx.fill();text(ctx,'contention + preamble + ack (overhead)',gx+88,gy+gh+18,{size:11,color:K.muted});
+    const eff=used/(nC*RU)*100;
+    read.set('slots',String(nC),'');read.set('last',nC+' slots',nC<=3?'good':nC<=8?'warn':'bad');read.set('eff',eff.toFixed(0)+'%',eff>60?'good':eff>30?'warn':'bad');
+  });
+}});
+
+/* ---------- Power / link budget ---------- */
+mod({id:'power',group:'rf',title:'Transmit power and the link budget',
+idea:'Signal strength at the client is a simple sum: transmit power plus antenna gains, minus everything lost on the way. Whatever is left above the noise decides the speed.',
+how:[
+'Power is measured in dBm: 0 dBm is 1 mW, 20 dBm is 100 mW, 30 dBm is 1 W. Every +3 dB doubles power and every +10 dB multiplies it by ten. Working in dB turns the whole chain into addition and subtraction.',
+'<b>EIRP</b> = TX power + antenna gain - cable loss. That is what regulators limit, not the chip\'s output. In the UK and EU (simplified): 20 dBm EIRP at 2.4 GHz, 23 dBm in the lower 5 GHz bands, and 23 dBm for indoor 6 GHz.',
+'Path loss grows with distance and frequency: the same distance costs about 7 dB more at 5 GHz than at 2.4 GHz. Each wall subtracts more. RSSI is what arrives. Subtract the noise floor (about -94 dBm at 20 MHz, -88 dBm at 80 MHz) and you get SNR, which picks the MCS.',
+'More power is not free. Near its maximum the power amplifier distorts the signal and EVM gets worse. That is why routers use a per-rate power table: full power for low MCS, backed off by several dB for 1024-QAM. Push TX power up and watch the highest MCS the transmitter can support fall.',
+'The link has two directions. A phone transmits at 10 to 15 dBm with tiny antennas, so a router that shouts at 23 dBm can reach a client that it cannot hear back. That asymmetry causes many "full bars but nothing loads" complaints.'],
+why:[
+'CPE tuning is a trade: coverage (more power), clean high-order modulation (less power), regulatory limits (EIRP caps), and heat. TX power, TSSI calibration and per-rate power tables are exactly what the RF part of this role tunes.',
+'For mesh and multi-AP homes, turning power down can improve the whole system by making clients roam at sensible points instead of sticking to a distant, loud AP.'],
+say:[
+'"I think of it as a link budget: EIRP is TX power plus antenna gain, subtract path loss and walls to get RSSI, subtract the noise floor to get SNR, and SNR picks the MCS. Max power is capped by EIRP regulations and by PA linearity, since EVM degrades near saturation, so high MCS rates are sent backed off. And I always check the uplink, because client TX power is much lower than the AP\'s."'],
+build({stage,controls,read}){
+  const S=makeCanvas(stage,w=>w<600?440:400);
+  let band='5',P=18,G=4,dist=8,walls=1,mat='brick',ctxP=14;
+  const LIM={'2.4':20,'5':23,'6':23},WL={drywall:{'2.4':3,'5':4,'6':5},brick:{'2.4':6,'5':10,'6':12},concrete:{'2.4':12,'5':18,'6':22}};
+  const F={'2.4':2442,'5':5500,'6':6200};
+  const mw=d=>{const m=lin(d);return m<10?m.toFixed(1):m.toFixed(0);};
+  controls.seg('Band',[['2.4','2.4 GHz'],['5','5 GHz'],['6','6 GHz']],'5',v=>band=v);
+  controls.slider('Router TX power',0,28,1,P,x=>x+' dBm ('+mw(x)+' mW)',x=>P=x);
+  controls.slider('Router antenna gain',0,8,0.5,G,x=>x+' dBi',x=>G=x);
+  controls.slider('Distance',1,30,0.5,dist,x=>x+' m',x=>dist=x);
+  controls.slider('Walls in the way',0,4,1,walls,x=>String(x),x=>walls=x);
+  controls.seg('Wall type',[['drywall','Plasterboard'],['brick','Brick'],['concrete','Concrete']],'brick',v=>mat=v);
+  controls.slider('Phone TX power',8,20,1,ctxP,x=>x+' dBm',x=>ctxP=x);
+  read.add('eirp','EIRP');read.add('rssi','Signal at phone');read.add('snr','SNR → speed');read.add('evm','Transmitter EVM limit');read.add('up','Router hears phone at');
+  run(()=>{
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const bw=band==='2.4'?20:80;const nf=-94+dB(bw/20);
+    const pl=20*Math.log10(F[band])-27.55+30*Math.log10(dist);const wl=walls*WL[mat][band];
+    const eirp=P+G;const rssi=eirp-pl-wl;const snr=rssi-nf;
+    const up=ctxP+0-pl-wl+G;const snrU=up-nf;
+    const evm=-42+Math.max(0,P-17)*2.2;const mS=mcsForSnr(snr),mE=mcsForEvm(evm);
+    const m=mS&&mE?(mS.m<mE.m?mS:mE):null;const scale=bw===20?143/600:1;
+    // ladder chart
+    const top=30,bot=H-58;const Y=d=>top+(35-d)/135*(bot-top);
+    for(let d=30;d>=-100;d-=10){line(ctx,44,Y(d),W-10,Y(d),K.grid,1);text(ctx,d+'',40,Y(d)+4,{align:'right',size:10,color:K.muted});}
+    text(ctx,'dBm',40,top-12,{align:'right',size:11,color:K.muted});
+    const split=W<600?0.62:0.64;const dl0=56,dl1=56+(W-66)*split-14,ul0=dl1+24,ul1=W-12;
+    const narrow=W<600;
+    const ladder=(x0,x1,steps,col,title)=>{const n=steps.length;const sw=(x1-x0)/n;text(ctx,title,x0,top-12,{size:13,w:600});
+      ctx.beginPath();steps.forEach((s,i)=>{const xa=x0+i*sw,xb=xa+sw;i?ctx.lineTo(xa,Y(s.v)):ctx.moveTo(xa,Y(s.v));ctx.lineTo(xb,Y(s.v));});ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.stroke();
+      steps.forEach((s,i)=>{const xc=x0+i*sw+sw/2;circle(ctx,xc,Y(s.v),3.5,col);text(ctx,s.v.toFixed(0),xc,Y(s.v)-7,{align:'center',size:11,w:600});
+        const lab=narrow?s.s:s.l;text(ctx,lab,xc,bot+16+(i%2)*13,{align:'center',size:10,color:K.muted});});};
+    ladder(dl0,dl1,[{l:'TX power',s:'TX',v:P},{l:'+ antenna = EIRP',s:'EIRP',v:eirp},{l:'− distance',s:'−dist',v:eirp-pl},{l:'− walls',s:'−walls',v:rssi},{l:'RSSI at phone',s:'RSSI',v:rssi}],K.tx,'Router → phone');
+    ladder(ul0,ul1,[{l:'Phone TX',s:'TX',v:ctxP},{l:'− path',s:'−path',v:ctxP-pl-wl},{l:'+ router ant.',s:'RSSI',v:up}],K.rx,narrow?'Uplink':'Phone → router');
+    line(ctx,44,Y(LIM[band]),dl1,Y(LIM[band]),K.bad,1.5,[6,4]);text(ctx,'EIRP limit '+LIM[band]+' dBm',dl0+4,Y(LIM[band])-4,{size:11,color:K.bad});
+    line(ctx,44,Y(nf),W-10,Y(nf),K.muted,1.5,[3,4]);text(ctx,'noise floor ('+bw+' MHz) '+nf.toFixed(0),W-12,Y(nf)+14,{align:'right',size:11,color:K.muted});
+    const sx=dl1-8;line(ctx,sx,Y(rssi),sx,Y(nf),K.g,2);text(ctx,'SNR '+snr.toFixed(0)+' dB',sx-6,(Y(rssi)+Y(nf))/2,{align:'right',size:12,w:600,color:K.g});
+    read.set('eirp',eirp.toFixed(1)+' dBm',eirp>LIM[band]?'bad':'good');
+    read.set('rssi',rssi.toFixed(0)+' dBm',rssi>-67?'good':rssi>-75?'warn':'bad');
+    read.set('snr',m?(snr.toFixed(0)+' dB → MCS '+m.m+', ~'+Math.round(m.r*2*scale)+' Mbps'):snr.toFixed(0)+' dB → no link',m&&m.m>=7?'good':m?'warn':'bad');
+    read.set('evm',evm.toFixed(0)+' dB → max MCS '+(mE?mE.m:'-'),mE&&mE.m>=10?'good':'warn');
+    read.set('up',up.toFixed(0)+' dBm (SNR '+snrU.toFixed(0)+')',snrU>20?'good':snrU>8?'warn':'bad');
+  });
+}});
+
+/* ---------- Propagation heatmap ---------- */
+mod({id:'propagation',group:'rf',title:'Indoor propagation and coverage',
+idea:'Radio weakens with distance, and every wall takes a bite. Higher frequencies lose more per wall, which is why 5 and 6 GHz rarely cover a whole home from one box.',
+how:[
+'In free space, signal power falls with the square of distance. Indoors it falls faster because of reflections, absorption and obstacles, so models use an exponent around 3 instead of 2.',
+'Walls attenuate by material: plasterboard a few dB, brick 6 to 12 dB, reinforced concrete 12 to 25 dB, and bathrooms with tile and water pipes are often the worst. Higher frequency loses more per wall.',
+'Signals also reflect (which helps MIMO and fills corners) and diffract around edges, so real coverage is lumpier than this model.',
+'Drag the router (the amber dot) around the flat, or use the arrow keys after focusing the map. Switch bands to see 6 GHz shrink. Add a mesh node and drag it to fill the dead zones. -67 dBm is a common target for smooth voice and video.'],
+why:[
+'Placement is the cheapest fix there is: a router in a cupboard or behind a TV loses 5 to 10 dB before it even starts.',
+'Mesh backhaul follows the same physics. A node placed in a dead zone has a weak backhaul and drags its clients down with it. The rule of thumb is to place it roughly halfway, where it still gets a strong link to the main router.'],
+say:[
+'"Indoor coverage is path loss plus per-wall attenuation, and both grow with frequency, so 6 GHz gives capacity but less reach. I design for around -67 dBm where voice and video matter, place mesh nodes where backhaul is still strong, not where coverage is worst, and verify with a walk test rather than trusting a model."'],
+build({stage,controls,read}){
+  const S=makeCanvas(stage,w=>Math.round(Math.min(460,Math.max(260,w*0.62))));
+  S.c.style.touchAction='none';S.c.tabIndex=0;S.c.setAttribute('aria-label','Floor plan. Drag the router, or use arrow keys to move it.');
+  const FW=16,FH=10;let band='5',P=20,mesh=false,dirty=true,drag=-1;
+  const aps=[{x:3,y:8.2},{x:12.5,y:2.2}];
+  const WL={d:{'2.4':3,'5':4,'6':5},b:{'2.4':6,'5':10,'6':12},c:{'2.4':12,'5':18,'6':22}};
+  const walls=[[0,0,16,0,'c'],[16,0,16,10,'c'],[16,10,0,10,'c'],[0,10,0,0,'c'],
+    [0,4,2.5,4,'b'],[3.5,4,6,4,'b'],[6,4,9,4,'c'],[6,0,6,4,'c'],[9,0,9,4,'c'],[9,4,9,4.6,'b'],
+    [9,5,12,5,'d'],[13,5,16,5,'d'],[9,7,9,10,'d']];
+  const rooms=[['Bedroom 1',3,2],['Bath',7.5,2],['Bedroom 2',12.5,2.5],['Living room',4.5,7.2],['Kitchen',12.5,7.5]];
+  const off=document.createElement('canvas');const octx=off.getContext('2d');
+  controls.seg('Band',[['2.4','2.4 GHz'],['5','5 GHz'],['6','6 GHz']],'5',v=>{band=v;dirty=true;});
+  controls.slider('Router power (EIRP)',10,23,1,P,x=>x+' dBm',x=>{P=x;dirty=true;});
+  controls.toggle('Add a mesh node',mesh,x=>{mesh=x;dirty=true;});
+  read.add('good','Floor at -67 dBm or better');read.add('dead','Floor below -80 dBm');read.add('bh','Mesh backhaul signal');
+  const F={'2.4':2442,'5':5500,'6':6200};
+  function cross(ax,ay,bx,by,cx,cy,dx,dy){const d=(bx-ax)*(dy-cy)-(by-ay)*(dx-cx);if(Math.abs(d)<1e-9)return false;const t=((cx-ax)*(dy-cy)-(cy-ay)*(dx-cx))/d,u=((cx-ax)*(by-ay)-(cy-ay)*(bx-ax))/d;return t>0&&t<1&&u>0&&u<1;}
+  function rssiAt(ap,x,y){const d=Math.max(0.5,Math.hypot(x-ap.x,y-ap.y));let L=20*Math.log10(F[band])-27.55+28*Math.log10(d);for(const w of walls)if(cross(ap.x,ap.y,x,y,w[0],w[1],w[2],w[3]))L+=WL[w[4]][band];return P-L;}
+  let geo={};let stats={good:0,dead:0,bh:0};
+  function color(r){if(r>=-55)return hexA(K.g,0.75);if(r>=-67)return hexA(K.g,0.4);if(r>=-75)return hexA(K.tx,0.5);if(r>=-82)return hexA(K.bad,0.45);return hexA(K.bad,0.12);}
+  function recompute(){const{W,H}=S;const sc=Math.min((W-20)/FW,(H-40)/FH);const ox=Math.round((W-FW*sc)/2),oy=8;geo={sc,ox,oy};
+    const d=window.devicePixelRatio||1;off.width=Math.round(W*d);off.height=Math.round(H*d);octx.setTransform(d,0,0,d,0,0);octx.clearRect(0,0,W,H);
+    const cell=Math.max(5,Math.round(sc/3));let g=0,dd=0,n=0;
+    for(let py=oy;py<oy+FH*sc;py+=cell)for(let px=ox;px<ox+FW*sc;px+=cell){const x=(px+cell/2-ox)/sc,y=(py+cell/2-oy)/sc;let r=rssiAt(aps[0],x,y);if(mesh)r=Math.max(r,rssiAt(aps[1],x,y));octx.fillStyle=color(r);octx.fillRect(px,py,Math.min(cell,ox+FW*sc-px),Math.min(cell,oy+FH*sc-py));n++;if(r>=-67)g++;if(r<-80)dd++;}
+    stats={good:g/n*100,dead:dd/n*100,bh:rssiAt(aps[0],aps[1].x,aps[1].y)};dirty=false;}
+  const toM=p=>({x:(p.x-geo.ox)/geo.sc,y:(p.y-geo.oy)/geo.sc});
+  S.c.addEventListener('pointerdown',e=>{const p=toM(S.pt(e));let best=-1,bd=1.2;aps.forEach((a,i)=>{if(i===1&&!mesh)return;const dd=Math.hypot(a.x-p.x,a.y-p.y);if(dd<bd){bd=dd;best=i;}});drag=best;if(drag<0){drag=0;}aps[drag].x=clamp(p.x,0.3,FW-0.3);aps[drag].y=clamp(p.y,0.3,FH-0.3);dirty=true;S.c.setPointerCapture(e.pointerId);});
+  S.c.addEventListener('pointermove',e=>{if(drag<0)return;const p=toM(S.pt(e));aps[drag].x=clamp(p.x,0.3,FW-0.3);aps[drag].y=clamp(p.y,0.3,FH-0.3);dirty=true;});
+  S.c.addEventListener('pointerup',()=>{drag=-1;});
+  S.c.addEventListener('keydown',e=>{const k={ArrowLeft:[-0.5,0],ArrowRight:[0.5,0],ArrowUp:[0,-0.5],ArrowDown:[0,0.5]}[e.key];if(!k)return;e.preventDefault();aps[0].x=clamp(aps[0].x+k[0],0.3,FW-0.3);aps[0].y=clamp(aps[0].y+k[1],0.3,FH-0.3);dirty=true;});
+  let lastBg='';
+  run(()=>{
+    if(S.fit())dirty=true;if(lastBg!==K.panel){lastBg=K.panel;dirty=true;}if(dirty)recompute();
+    const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);ctx.drawImage(off,0,0,W,H);
+    const{sc,ox,oy}=geo;const X=x=>ox+x*sc,Y=y=>oy+y*sc;
+    walls.forEach(w=>line(ctx,X(w[0]),Y(w[1]),X(w[2]),Y(w[3]),K.ink,w[4]==='c'?4:w[4]==='b'?3:1.5));
+    rooms.forEach(r=>text(ctx,r[0],X(r[1]),Y(r[2]),{align:'center',size:12,w:600,color:K.ink}));
+    circle(ctx,X(aps[0].x),Y(aps[0].y),9,K.tx,K.panel,2);text(ctx,'Router',X(aps[0].x),Y(aps[0].y)-14,{align:'center',size:11,w:700});
+    if(mesh){line(ctx,X(aps[0].x),Y(aps[0].y),X(aps[1].x),Y(aps[1].y),K.v,1.5,[5,4]);circle(ctx,X(aps[1].x),Y(aps[1].y),9,K.v,K.panel,2);text(ctx,'Mesh node',X(aps[1].x),Y(aps[1].y)-14,{align:'center',size:11,w:700});}
+    const ly=H-16;const items=[[hexA(K.g,0.75),'≥ -55'],[hexA(K.g,0.4),'-67'],[hexA(K.tx,0.5),'-75'],[hexA(K.bad,0.45),'-82'],[hexA(K.bad,0.12),'weaker']];
+    items.forEach((it,i)=>{const x=ox+i*Math.min(90,(W-20)/5);ctx.fillStyle=it[0];ctx.fillRect(x,ly-9,14,12);text(ctx,it[1]+(i<4?' dBm':''),x+18,ly+1,{size:11,color:K.muted});});
+    text(ctx,'Walls: thick = concrete, medium = brick, thin = plasterboard',W-10,ly+1,{align:'right',size:11,color:K.muted});
+    read.set('good',stats.good.toFixed(0)+'%',stats.good>80?'good':stats.good>55?'warn':'bad');
+    read.set('dead',stats.dead.toFixed(0)+'%',stats.dead<5?'good':stats.dead<15?'warn':'bad');
+    read.set('bh',mesh?stats.bh.toFixed(0)+' dBm':'no mesh node',mesh?(stats.bh>-65?'good':stats.bh>-75?'warn':'bad'):'');
+  });
+}});
+
+/* ---------- Spatial reuse ---------- */
+mod({id:'reuse',group:'rf',title:'Spatial reuse and BSS colouring',
+idea:'Neighbouring networks on the same channel normally take turns. Wi-Fi 6 lets a router ignore a faint neighbour and transmit at the same time, if it turns its own power down.',
+how:[
+'Before transmitting, a radio listens (clear channel assessment). If it hears another Wi-Fi transmission above -82 dBm, it must wait. Two networks on one channel therefore share airtime, even when they are far enough apart not to really interfere.',
+'Wi-Fi 6 adds a BSS colour, a small number in every frame\'s preamble. A radio can tell instantly whether a frame belongs to its own network or a neighbour (an OBSS).',
+'If the neighbour\'s frame is weaker than the OBSS-PD threshold (adjustable between -82 and -62 dBm), the radio may ignore it and transmit anyway. The price: it must lower its TX power by the same number of dB it raised the threshold, so it doesn\'t hurt the neighbour.',
+'Move the networks apart and raise the threshold: at some distance both networks transmit together and throughput nearly doubles. Too aggressive and your own clients\' SNR drops.'],
+why:[
+'Apartment blocks put dozens of networks on the same few channels. Spatial reuse is one of the few tools that improves capacity there.',
+'Support and default settings differ by chipset and firmware, and the power reduction rule is easy to get wrong, so it is a real validation target.'],
+say:[
+'"BSS colouring lets a station classify an overlapping-BSS frame from the preamble. If it is below the OBSS-PD threshold the station can treat the medium as idle, but it has to reduce TX power by the amount the threshold was raised. It trades a bit of SINR for concurrent transmissions, which pays off in dense deployments."'],
+build({stage,controls,read}){
+  const S=makeCanvas(stage,w=>w<600?300:280);
+  let d=18,pd=-82,color=true,ph=0;
+  controls.slider('Distance between the two networks',5,40,1,d,x=>x+' m',x=>d=x);
+  controls.slider('OBSS-PD threshold',-82,-62,1,pd,x=>x+' dBm',x=>pd=x);
+  controls.toggle('BSS colouring (Wi-Fi 6)',color,x=>color=x);
+  read.add('hear','Router A hears B at');read.add('beh','Router A behaviour');read.add('snr','Client A SINR');read.add('tp','Client A throughput');
+  run(dt=>{
+    ph=(ph+dt*0.9)%2;
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const rB=20-40-33*Math.log10(d);
+    let conc=false,red=0;if(color&&rB<pd){conc=true;red=pd-(-82);}
+    const air=conc?1:(rB>-82?0.5:1);
+    const sig=(20-red)-40-33*Math.log10(5);const nf=-88;const interf=conc?rB-3:-200;
+    const sinr=sig-10*Math.log10(lin(nf)+lin(interf));const m=mcsForSnr(sinr);const tp=m?m.r*2*air*0.65:0;
+    const cy=H/2+10,ax=W*0.14,R=(W*0.74/40),bx=ax+R*d;
+    const ring=(x,r,col)=>{ctx.beginPath();ctx.arc(x,cy,r,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);};
+    const rad=th=>Math.pow(10,(20-40-th)/33);
+    ctx.save();ctx.beginPath();ctx.rect(0,34,W,H-60);ctx.clip();if(color)ring(ax,rad(pd)*R,K.v);ctx.restore();
+    const aOn=conc||ph<1,bOn=conc||ph>=1;
+    const node=(x,c,lab,on)=>{if(on){circle(ctx,x,cy,26,hexA(c,0.18));}circle(ctx,x,cy,12,c);text(ctx,lab,x,cy-20,{align:'center',size:13,w:700});circle(ctx,x+(lab==='A'?-34:34),cy+34,6,K.ink);if(on)arrow(ctx,x,cy+10,x+(lab==='A'?-30:30),cy+30,c,2);};
+    node(ax,K.tx,'A',aOn);node(bx,K.rx,'B',bOn);
+    text(ctx,conc?'Both transmit at the same time':aOn?'A transmits, B waits':'B transmits, A waits',W/2,24,{align:'center',size:14,w:600});
+    text(ctx,(color?'Violet ring: inside it, A still defers to B. ':'')+'At the normal -82 dBm rule, A defers to B up to about '+Math.round(rad(-82))+' m away.',W/2,H-10,{align:'center',size:11,color:K.muted});
+    read.set('hear',rB.toFixed(0)+' dBm');
+    read.set('beh',conc?'Transmits, power -'+red+' dB':rB>-82?'Waits its turn (50%)':'Independent',conc?'good':rB>-82?'warn':'good');
+    read.set('snr',sinr.toFixed(0)+' dB',sinr>30?'good':sinr>20?'warn':'bad');
+    read.set('tp','~'+Math.round(tp)+' Mbps',tp>600?'good':tp>350?'warn':'bad');
+  });
+}});
+
+/* ---------- Antennas and VSWR ---------- */
+mod({id:'antennas',group:'rf',title:'Antennas, patterns and VSWR',
+idea:'An antenna doesn\'t create power, it shapes where the power goes. And it only radiates well if it is tuned to the band, which the plastic case and circuit board can quietly ruin.',
+how:[
+'Gain (dBi) is directivity: squeezing energy into some directions at the expense of others. A dipole is omnidirectional around its axis (a doughnut, about 2.15 dBi) with nulls straight up and down. PIFAs (planar inverted-F) sit flat over a ground plane and push energy away from it. PCB trace antennas are cheap and compact but have lumpy, less predictable patterns.',
+'An antenna is a resonant structure. Where its impedance matches the 50 Ω feed line, power flows out; elsewhere it reflects back. S11 (return loss), measured with a VNA, shows the dip at resonance. A common design target is S11 below -10 dB across the whole band, roughly VSWR 2:1, which reflects about 11% of power.',
+'Putting an antenna in an enclosure shifts its resonance, usually downward, because plastic and nearby metal load it. The ground plane size, cables, shields and even screws all matter. A matching circuit (a few capacitors and inductors, often a pi network) pulls the resonance back.',
+'Slide the enclosure shift and watch the dip leave the shaded band. Check how VSWR and lost power change at the band edges.'],
+why:[
+'Most CPE antenna problems show up as poor range in one orientation, one band much weaker than another, or one chain weaker than the others. Those look like firmware issues in a throughput test but are really RF.',
+'Rate versus orientation tests on a turntable, chain-by-chain RSSI, and VSWR checks after the enclosure is final are how they get caught.'],
+say:[
+'"I\'d evaluate an antenna on pattern, gain and efficiency, and on match: S11 under -10 dB, VSWR under 2:1 across the band, measured in the final enclosure because plastics and ground plane detune it, usually lower in frequency. Fixes are re-tuning the matching network or the ground plane, then confirming with OTA tests like rate versus orientation."'],
+build({stage,controls,read}){
+  const PAT={
+    dipole:{n:'Dipole',g:2.15,az:p=>1,el:p=>{const th=Math.PI/2-p;const s=Math.sin(th);if(Math.abs(s)<1e-3)return 0;return Math.abs(Math.cos(Math.PI/2*Math.cos(th))/s);}},
+    pifa:{n:'PIFA',g:3,az:p=>0.55+0.45*Math.cos(p),el:p=>clamp(0.5+0.35*Math.cos(p)+0.15*Math.cos(2*p),0.08,1)},
+    pcb:{n:'PCB trace',g:2,az:p=>clamp(0.62+0.22*Math.cos(2*p+0.7)+0.16*Math.cos(p-0.4),0.12,1),el:p=>clamp(0.55+0.3*Math.cos(p)+0.15*Math.sin(3*p),0.08,1)}};
+  const BAND={'2.4':{c:2442,lo:2400,hi:2483.5,s0:2200,s1:2700,bw:150,sh:200},'5':{c:5500,lo:5150,hi:5850,s0:4800,s1:6200,bw:1250,sh:500}};
+  let type='dipole',plane='el',band='2.4',det=0;
+  const S=makeCanvas(stage,w=>w<620?620:340);
+  controls.seg('Antenna type',[['dipole','Dipole'],['pifa','PIFA'],['pcb','PCB trace']],type,v=>type=v);
+  controls.seg('Pattern view',[['az','From above (azimuth)'],['el','From the side (elevation)']],plane,v=>plane=v);
+  controls.seg('Band',[['2.4','2.4 GHz'],['5','5 GHz']],band,v=>band=v);
+  controls.slider('Enclosure and ground plane shift',-100,100,1,det,x=>{const b=BAND[band];const f=Math.round(x/100*b.sh);return(f>0?'+':'')+f+' MHz';},x=>det=x);
+  read.add('g','Peak gain');read.add('vswr','Worst VSWR in band');read.add('rl','Return loss (worst)');read.add('lost','Power lost to mismatch');
+  run(()=>{
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const stacked=W<620;const half=stacked?{x:0,y:0,w:W,h:300}:{x:0,y:0,w:W*0.42,h:H};const sp=stacked?{x:0,y:310,w:W,h:H-310}:{x:W*0.44,y:0,w:W*0.56,h:H};
+    // polar
+    const p=PAT[type];const cx=half.x+half.w/2,cy=half.y+half.h/2+8,R=Math.min(half.w,half.h)/2-34;
+    [0.25,0.5,0.75,1].forEach(f=>circle(ctx,cx,cy,R*f,null,K.grid,1));line(ctx,cx-R,cy,cx+R,cy,K.grid,1);line(ctx,cx,cy-R,cx,cy+R,K.grid,1);
+    const fn=plane==='az'?p.az:p.el;let mx=0;const samp=[];for(let a=0;a<=360;a+=2){const r=fn(a*Math.PI/180);samp.push(r);mx=Math.max(mx,r);}
+    ctx.beginPath();samp.forEach((r,i)=>{const a=i*2*Math.PI/180;const x=cx+R*(r/mx)*Math.cos(a),y=cy-R*(r/mx)*Math.sin(a);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.closePath();ctx.fillStyle=hexA(K.tx,0.2);ctx.fill();ctx.strokeStyle=K.tx;ctx.lineWidth=2;ctx.stroke();
+    text(ctx,p.n+', '+(plane==='az'?'seen from above':'seen from the side'),half.x+12,half.y+18,{size:13,w:600});
+    text(ctx,plane==='el'?'up':'',cx,cy-R-8,{align:'center',size:11,color:K.muted});
+    text(ctx,plane==='el'?'horizon':'front',cx+R+4,cy-6,{size:11,color:K.muted});
+    if(type==='dipole'&&plane==='el')text(ctx,'nulls straight up and down',cx,cy+R+22,{align:'center',size:11,color:K.muted});
+    // S11
+    const b=BAND[band];const fr=b.c+det/100*b.sh;const gam=f=>Math.sqrt(1-0.97/(1+Math.pow((f-fr)/b.bw,2)));
+    const gx=sp.x+44,gy=sp.y+30,gw=sp.w-60,gh=sp.h-70;const X=f=>gx+(f-b.s0)/(b.s1-b.s0)*gw,Y=s=>gy+(-s)/30*gh;
+    text(ctx,'S11 (return loss) as a VNA shows it',sp.x+12,sp.y+18,{size:13,w:600});
+    ctx.fillStyle=hexA(K.g,0.12);ctx.fillRect(X(b.lo),gy,X(b.hi)-X(b.lo),gh);text(ctx,'Wi-Fi band',(X(b.lo)+X(b.hi))/2,gy+14,{align:'center',size:11,color:K.g,w:600});
+    for(let s=0;s>=-30;s-=10){line(ctx,gx,Y(s),gx+gw,Y(s),K.grid,1);text(ctx,s+' dB',gx-4,Y(s)+4,{align:'right',size:10,color:K.muted});}
+    line(ctx,gx,Y(-10),gx+gw,Y(-10),K.bad,1.5,[6,4]);text(ctx,'-10 dB target',gx+gw,Y(-10)-4,{align:'right',size:11,color:K.bad});
+    ctx.beginPath();for(let i=0;i<=200;i++){const f=b.s0+(b.s1-b.s0)*i/200;const s=20*Math.log10(gam(f));i?ctx.lineTo(X(f),Y(s)):ctx.moveTo(X(f),Y(s));}ctx.strokeStyle=K.rx;ctx.lineWidth=2.4;ctx.stroke();
+    for(let i=0;i<=4;i++){const f=b.s0+(b.s1-b.s0)*i/4;text(ctx,Math.round(f)+'',X(f),gy+gh+16,{align:'center',size:10,color:K.muted});}
+    text(ctx,'MHz',gx+gw,gy+gh+30,{align:'right',size:10,color:K.muted});
+    let worst=0;for(let f=b.lo;f<=b.hi;f+=2)worst=Math.max(worst,gam(f));
+    const vswr=(1+worst)/(1-worst),rl=-20*Math.log10(worst),refl=worst*worst*100,ml=-10*Math.log10(1-worst*worst);
+    read.set('g',p.g+' dBi');read.set('vswr',vswr.toFixed(2)+' : 1',vswr<2?'good':vswr<3?'warn':'bad');
+    read.set('rl',rl.toFixed(1)+' dB',rl>10?'good':rl>6?'warn':'bad');
+    read.set('lost',refl.toFixed(0)+'% reflected (-'+ml.toFixed(1)+' dB)',refl<11?'good':refl<25?'warn':'bad');
+  });
+}});
+
+/* ---------- RF front-end ---------- */
+mod({id:'frontend',group:'rf',title:'RF front-end, TSSI and calibration',
+idea:'Between the Wi-Fi chip and the antenna sits a small chain of parts that amplify, switch and filter the signal. Calibration data tells the firmware how this particular unit behaves.',
+how:[
+'Transmit: the baseband creates digital samples, a DAC turns them into an analogue signal, a mixer shifts it up to 2.4, 5 or 6 GHz, and the power amplifier (PA) boosts it. A coupler samples the output for TSSI (transmit signal strength indicator), and the T/R switch connects it to the antenna.',
+'Receive runs the other way: antenna, switch, filter, low-noise amplifier (LNA), mixer down, ADC, baseband. The LNA\'s noise figure sets how weak a signal the radio can hear.',
+'A FEM (front-end module) packages PA, LNA and switch together. An iFEM is integrated in the Wi-Fi chip; an eFEM is a separate part on the board. External FEMs usually give more power and a better LNA, and need their own control lines driven from the firmware or driver.',
+'Every unit is slightly different, so on the production line each one is calibrated: per-chain TX power versus the TSSI reading, frequency offset, and RX gain. These values (caldata) are stored in flash, on Qualcomm platforms as board data. At runtime, the TSSI loop compares the measured output to the target and corrects for temperature drift. The loop is only as good as the calibration it is built on.',
+'Try it: heat the unit up with TSSI off and watch power drift. Turn TSSI on and it is held. Then choose bad caldata: the loop holds the wrong value confidently.'],
+why:[
+'Wrong TX power from bad calibration is invisible in a basic connectivity test but shows up as poor range, failed EVM at high MCS, or a regulatory failure on output power.',
+'The brief explicitly mentions Qualcomm logs (caldata, fw_debug) and tuning TX power, TSSI and eFEM control: this is the day-to-day of that job.'],
+say:[
+'"The TX chain is DAC, mixer, PA, coupler for TSSI, then the switch. RX is switch, filter, LNA, mixer, ADC. The TSSI loop uses a coupled sample of the output to hold target power across temperature, but it relies on per-chain calibration, so bad caldata gives a stable but wrong power. I\'d verify per-chain conducted power and EVM against the power table at temperature extremes."'],
+build({stage,controls,read,extra}){
+  const S=makeCanvas(stage,w=>w<600?500:470);
+  let mode='tx',tgt=20,temp=25,tssi=true,cal='good',sel='pa',t=0;
+  const INFO={
+    bbT:['Baseband (transmit)','The Wi-Fi chip\'s digital processor builds OFDM symbols: QAM points on each subcarrier, turned into a time-domain waveform. Digital pre-distortion, when used, also happens here.'],
+    dac:['DAC','Turns digital samples into an analogue signal. Its resolution and noise limit how clean high-order QAM can be.'],
+    mixT:['Up-mixer and LO','Multiplies the signal with a local oscillator to shift it to 2.4, 5 or 6 GHz. LO phase noise and carrier leakage degrade EVM.'],
+    pa:['Power amplifier (PA)','Boosts the signal to transmit power. Near saturation it compresses and distorts, so high MCS rates need power backoff. PA bias and gain drift with temperature.'],
+    tssi:['Coupler and TSSI','A coupler taps a tiny sample of the output. The TSSI detector turns it into a voltage the firmware reads to measure real output power, closing the power control loop.'],
+    sw:['T/R switch','Connects the antenna to either the PA (transmit) or the LNA (receive). Its insertion loss is pure waste in both directions, and its isolation protects the LNA from the PA.'],
+    ant:['Antenna','Radiates and receives. Its match (VSWR) and efficiency decide how much of the PA\'s power actually leaves the box.'],
+    flt:['Filter','Rejects out-of-band energy, for example keeping strong LTE or 5G signals out of the receiver, and limits transmit harmonics.'],
+    lna:['Low-noise amplifier (LNA)','The first gain stage on receive. Its noise figure directly sets sensitivity: 1 dB worse NF is 1 dB less range. An external FEM with a better LNA improves weak-signal reception.'],
+    mixR:['Down-mixer and LO','Shifts the received signal back down for sampling.'],
+    adc:['ADC','Samples the received analogue signal. Automatic gain control (AGC) keeps it in range so strong and weak signals both decode.'],
+    bbR:['Baseband (receive)','Channel estimation, MIMO separation, demodulation and decoding, plus RSSI and SNR reporting you see in driver stats.']};
+  const det=el('div',{class:'detail'});extra.append(det);let shown='';
+  controls.seg('Signal path',[['tx','Transmit'],['rx','Receive']],mode,v=>{mode=v;});
+  controls.slider('Target TX power',10,26,0.5,tgt,x=>x+' dBm',x=>tgt=x);
+  controls.slider('Board temperature',-10,75,1,temp,x=>x+' °C',x=>temp=x);
+  controls.toggle('TSSI closed loop',tssi,x=>tssi=x);
+  controls.seg('Calibration data',[['good','Good caldata'],['bad','Bad caldata (+2.5 dB error)']],cal,v=>cal=v);
+  read.add('act','Actual output power');read.add('err','Error vs target');read.add('evm','EVM');read.add('mcs','Highest clean MCS');
+  let hits=[];
+  S.c.addEventListener('click',e=>{const p=S.pt(e);for(const h of hits){if(p.x>=h.x&&p.x<=h.x+h.w&&p.y>=h.y&&p.y<=h.y+h.h){sel=h.id;break;}}});
+  S.c.style.cursor='pointer';
+  const G0=14,PSAT=28;
+  const rapp=pin=>{const al=Math.sqrt(lin(pin+G0)),as=Math.sqrt(lin(PSAT));const ao=al/Math.pow(1+Math.pow(al/as,4),0.25);return 10*Math.log10(ao*ao);};
+  run(dt=>{
+    t+=dt;S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);hits=[];
+    const pad=10,cw=(W-2*pad)/7,bw=Math.min(100,cw-10),bh=34,y1=40,y2=118;
+    const bx=c=>pad+c*cw+(cw-bw)/2;
+    text(ctx,'Tap any block to see what it does',pad,18,{size:12,color:K.muted});
+    // FEM box
+    ctx.setLineDash([5,4]);rrect(ctx,bx(3)-6,y1-14,bx(5)+bw-bx(3)+12,y2+bh-y1+22,8);ctx.strokeStyle=K.v;ctx.lineWidth=1.2;ctx.stroke();ctx.setLineDash([]);
+    text(ctx,'FEM',bx(5)+bw,y2+bh+20,{align:'right',size:11,color:K.v,w:600});
+    const blocks=[['bbT','Baseband',0,y1],['dac','DAC',1,y1],['mixT','Mixer ↑',2,y1],['pa','PA',3,y1],['tssi','TSSI',4,y1],
+      ['bbR','Baseband',0,y2],['adc','ADC',1,y2],['mixR','Mixer ↓',2,y2],['lna','LNA',3,y2],['flt','Filter',4,y2]];
+    const active=mode==='tx'?y1:y2;
+    blocks.forEach(([id,lab,c,y])=>{const x=bx(c);rrect(ctx,x,y,bw,bh,6);ctx.fillStyle=sel===id?hexA(K.tx,0.25):(y===active?K.soft:K.bg);ctx.fill();ctx.strokeStyle=sel===id?K.tx:K.line;ctx.lineWidth=sel===id?2:1;ctx.stroke();text(ctx,lab,x+bw/2,y+bh/2+4,{align:'center',size:bw<60?10:12,w:600,color:y===active?K.ink:K.muted});hits.push({id,x,y,w:bw,h:bh});if(c<4)line(ctx,x+bw,y+bh/2,bx(c+1),y+bh/2,y===active?K.ink:K.line,1.2);});
+    // switch
+    const sx=bx(5),swy=y1,swh=y2+bh-y1;rrect(ctx,sx,swy,bw,swh,6);ctx.fillStyle=sel==='sw'?hexA(K.tx,0.25):K.soft;ctx.fill();ctx.strokeStyle=sel==='sw'?K.tx:K.line;ctx.stroke();text(ctx,'T/R switch',sx+bw/2,swy+swh/2+4,{align:'center',size:bw<60?10:12,w:600});hits.push({id:'sw',x:sx,y:swy,w:bw,h:swh});
+    line(ctx,bx(4)+bw,y1+bh/2,sx,y1+bh/2,mode==='tx'?K.ink:K.line,1.2);line(ctx,bx(4)+bw,y2+bh/2,sx,y2+bh/2,mode==='rx'?K.ink:K.line,1.2);
+    const ax=bx(6)+bw/2,ay=(y1+y2+bh)/2;line(ctx,sx+bw,ay,ax,ay,K.ink,1.2);line(ctx,ax,ay,ax,ay-26,K.ink,2);line(ctx,ax-10,ay-36,ax,ay-26,K.ink,2);line(ctx,ax+10,ay-36,ax,ay-26,K.ink,2);
+    text(ctx,'Antenna',ax,ay+18,{align:'center',size:11,w:600});hits.push({id:'ant',x:ax-24,y:ay-40,w:48,h:66});
+    if(sel==='ant'){circle(ctx,ax,ay-26,20,null,K.tx,2);}
+    if(tssi&&mode==='tx'){const xa=bx(4)+bw/2,xb=bx(0)+bw/2;ctx.strokeStyle=K.v;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(xa,y1);ctx.lineTo(xa,y1-10);ctx.lineTo(xb,y1-10);ctx.lineTo(xb,y1);ctx.stroke();ctx.setLineDash([]);text(ctx,'feedback loop',(xa+xb)/2,y1-14,{align:'center',size:10,color:K.v});}
+    // moving dots
+    const path=mode==='tx'?[[bx(0)+bw/2,y1+bh/2],[sx+bw/2,y1+bh/2],[sx+bw/2,ay],[ax,ay]]:[[ax,ay],[sx+bw/2,ay],[sx+bw/2,y2+bh/2],[bx(0)+bw/2,y2+bh/2]];
+    for(let k=0;k<4;k++){const[x,y]=along(path,((t*0.35)+k/4)%1);circle(ctx,x,y,4,mode==='tx'?K.tx:K.rx);}
+    // PA curve
+    const drift=-0.045*(temp-25),off=cal==='bad'?2.5:0;
+    const demanded=tgt+off+(tssi?0:drift);const pin=demanded-G0;const out=rapp(pin);const comp=demanded-out;
+    const evm=-42+Math.max(0,out-17)*2.2+comp*8;const mE=mcsForEvm(evm);
+    const gx=56,gy=y2+bh+52,gw=W-gx-20,gh=H-gy-30;const PX=p=>gx+(p+15)/30*gw,PY=p=>gy+gh-(p)/30*gh;
+    text(ctx,'Power amplifier: output vs input',gx-46,gy-14,{size:13,w:600});
+    for(let p=0;p<=30;p+=10){line(ctx,gx,PY(p),gx+gw,PY(p),K.grid,1);text(ctx,p+' dBm',gx-4,PY(p)+4,{align:'right',size:10,color:K.muted});}
+    line(ctx,PX(-15),PY(-15+G0+0),PX(15),PY(15+G0),hexA(K.muted,0.6),1,[4,4]);
+    ctx.beginPath();for(let p=-15;p<=15;p+=0.25){const o=rapp(p);const x=PX(p),y=PY(o);p===-15?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.strokeStyle=K.tx;ctx.lineWidth=2.4;ctx.stroke();
+    line(ctx,gx,PY(PSAT),gx+gw,PY(PSAT),K.bad,1,[2,4]);text(ctx,'saturation',gx+gw,PY(PSAT)-4,{align:'right',size:10,color:K.bad});
+    const opx=PX(clamp(pin,-15,15)),opy=PY(out);circle(ctx,opx,opy,6,comp>0.5?K.bad:K.g,K.panel,2);
+    line(ctx,gx,PY(tgt),gx+gw,PY(tgt),K.rx,1.2,[6,3]);text(ctx,'target '+tgt+' dBm',gx+6,PY(tgt)-4,{size:10,color:K.rx});
+    text(ctx,'input power →',gx+gw,gy+gh+16,{align:'right',size:10,color:K.muted});
+    const err=out-tgt;
+    read.set('act',out.toFixed(1)+' dBm');read.set('err',(err>=0?'+':'')+err.toFixed(1)+' dB',Math.abs(err)<0.6?'good':Math.abs(err)<1.5?'warn':'bad');
+    read.set('evm',evm.toFixed(1)+' dB',evm<-35?'good':evm<-27?'warn':'bad');read.set('mcs',mE?'MCS '+mE.m+' ('+mE.mod+')':'none',mE&&mE.m>=10?'good':mE&&mE.m>=7?'warn':'bad');
+    if(shown!==sel){shown=sel;const[h,p]=INFO[sel];det.innerHTML='';det.append(el('h3',{},h),el('p',{},p));}
+  });
+}});
+
+/* =====================================================================
+   EMBEDDED
+   ===================================================================== */
+mod({id:'stack',group:'emb',title:'Driver, firmware and where the logs come from',
+idea:'A Wi-Fi event passes through four layers, from radio hardware up to user-space daemons. Knowing which layer wrote a log line tells you who owns the bug.',
+how:[
+'<b>Radio hardware</b>: the RF front-end, baseband and MAC hardware on the Wi-Fi chip. Its per-unit calibration (caldata or board data) is loaded at boot.',
+'<b>Firmware</b> runs on a processor inside the Wi-Fi chip. On modern offload designs it handles rate control, beamforming sounding, OFDMA scheduling, power save and much of the MAC. Its own debug logs (for example fw_debug on Qualcomm) are often the only view into it.',
+'<b>Kernel driver</b> on the router CPU: the vendor driver (Qualcomm, Broadcom or MediaTek specific), plus the Linux wireless stack cfg80211 and nl80211 that user space talks to. Driver messages land in the kernel log (<code>dmesg</code>).',
+'<b>User space</b>: hostapd handles authentication, association and WPA keys; wpa_supplicant does the same on the client side; mesh or steering agents and the ISP\'s management agent (TR-069 or TR-369) sit here too. Tools like <code>iw</code> and vendor utilities query the layers below.',
+'Pick a scenario and step through. The log lines are illustrative and their exact format varies by vendor, except the TxBF message, which is the real string from the 6 GHz reconnect-loop finding.'],
+why:[
+'"Client keeps disconnecting" can be a hostapd policy, a driver bug, a firmware crash, or RF. Finding which layer first logged the problem decides whether it goes to the chipset vendor, the CPE firmware team, or the RF team.',
+'This is exactly what the CPE log intelligence module automates: broad parsing across all layers, then rules that group events into issues with an evidence timeline.'],
+say:[
+'"I read logs by layer: hostapd for auth and association decisions, the vendor driver and cfg80211 in dmesg for link and key events, firmware debug logs for rate control, TxBF and scheduling, and calibration data at boot for TX power issues. The first layer to log an anomaly in the timeline is usually the owner."',
+'"For example, a 6 GHz client reconnect loop that looked like a roaming problem traced to the driver repeatedly failing to delete a TxBF link for that client, which made it a beamforming defect in the driver and firmware rather than RF coverage."'],
+build({stage,controls,read,extra}){
+  const S=makeCanvas(stage,w=>w<600?330:300);
+  const LAY=[['User space','hostapd, wpa_supplicant, mesh agent, TR-069/369'],['Kernel driver','vendor Wi-Fi driver, cfg80211 / nl80211'],['Wi-Fi firmware','rate control, TxBF, OFDMA scheduler, power save'],['Radio hardware','RF front-end, baseband, caldata']];
+  const SC={
+    connect:[[3,'[hw] 5G radio: probe request received, rssi -48'],[2,'[fw] mgmt frame forwarded to host: AUTH from aa:bb:cc:11:22:33'],[1,'nl80211: RX mgmt AUTH on wlan1'],[0,'hostapd: wlan1: STA aa:bb:cc:11:22:33 IEEE 802.11: authenticated'],[0,'hostapd: wlan1: STA aa:bb:cc:11:22:33 IEEE 802.11: associated (aid 3)'],[0,'hostapd: wlan1: STA aa:bb:cc:11:22:33 WPA: pairwise key handshake completed (RSN)'],[1,'nl80211: NEW_KEY cipher CCMP installed for aid 3'],[2,'[fw] rate ctrl init: nss 2, bw 80, start mcs 9']],
+    txbf:[[2,'[fw] txbf: sounding to aa:bb:cc:44:55:66 (6G) no valid feedback'],[1,'wlc_txbf_delete_link failed',1],[1,'wlc_txbf_delete_link failed',1],[1,'wlc_txbf_delete_link failed (x200+ in capture window)',1],[0,'hostapd: wlan2: STA aa:bb:cc:44:55:66 IEEE 802.11: disassociated'],[0,'hostapd: wlan2: STA aa:bb:cc:44:55:66 IEEE 802.11: associated (aid 7)'],[0,'... repeats: reconnect loop for one client on 6 GHz'],[1,'log intelligence rule: CLIENT_RECONNECT_LOOP + TXBF_LINK_ERROR correlated for this MAC',1]],
+    power:[[3,'[boot] board data loaded for radio 1 (caldata from flash)'],[3,'[boot] chain 0/1/2/3 TSSI cal values applied'],[2,'[fw] tpc: target 20.0 dBm, chain 2 measured offset +2.6 dB',1],[1,'driver: regulatory domain GB, max EIRP 23 dBm on 5180'],[2,'[fw] tpc: chain 2 clipped to table limit, evm degraded at mcs 11',1],[0,'test result: MCS 11 PER high at short range on chain 2 only']]};
+  let sc='connect',cur=0,playing=false,acc=0;
+  const con=el('pre',{class:'console','aria-live':'polite'});extra.append(con);let shown='';
+  controls.seg('Scenario',[['connect','Normal client connect'],['txbf','TxBF failure on 6 GHz'],['power','TX power and calibration']],sc,v=>{sc=v;cur=0;});
+  controls.button('Previous',()=>{cur=Math.max(0,cur-1);playing=false;},true);
+  controls.button('Next event',()=>{cur=Math.min(SC[sc].length-1,cur+1);playing=false;});
+  const pb=controls.button('Play',b=>{playing=!playing;if(playing&&cur>=SC[sc].length-1)cur=0;b.textContent=playing?'Pause':'Play';});
+  read.add('l','Layer logging now');read.add('own','Likely owner if this is the first anomaly');
+  const OWN=['CPE software / hostapd config','CPE driver team or chipset vendor','Chipset vendor (firmware)','RF and hardware team'];
+  run((dt,tt)=>{
+    const st=SC[sc];cur=Math.min(cur,st.length-1);
+    if(playing){acc+=dt;if(acc>1.3){acc=0;if(cur<st.length-1)cur++;else{playing=false;pb.textContent='Play';}}}
+    S.fit();const{ctx,W,H}=S;ctx.clearRect(0,0,W,H);
+    const lh=(H-20)/4;
+    LAY.forEach((l,i)=>{const y=10+i*lh;const on=st[cur][0]===i;rrect(ctx,10,y+4,W-20,lh-8,8);ctx.fillStyle=on?hexA(st[cur][2]?K.bad:K.tx,0.18):K.soft;ctx.fill();ctx.strokeStyle=on?(st[cur][2]?K.bad:K.tx):K.line;ctx.lineWidth=on?2:1;ctx.stroke();
+      text(ctx,l[0],24,y+lh/2,{size:16,w:600,cond:true});text(ctx,l[1],24,y+lh/2+18,{size:12,color:K.muted});});
+    // trail
+    for(let k=0;k<=cur;k++){const x=W-40-(cur-k)*26;if(x<W*0.55)continue;const y=10+st[k][0]*lh+lh/2;circle(ctx,x,y,k===cur?8:5,k===cur?(st[k][2]?K.bad:K.tx):hexA(K.muted,0.6));if(k>0){const x0=W-40-(cur-k+1)*26,y0=10+st[k-1][0]*lh+lh/2;if(x0>=W*0.55)line(ctx,x0,y0,x,y,hexA(K.muted,0.5),1.2);}}
+    read.set('l',LAY[st[cur][0]][0]);read.set('own',OWN[st[cur][0]],st[cur][2]?'bad':'');
+    const key=sc+cur;if(shown!==key){shown=key;con.innerHTML='';st.slice(0,cur+1).forEach(s=>{const sp=el('span',{class:s[2]?'hl':''},s[1]+'\n');con.append(sp);});con.scrollTop=con.scrollHeight;}
+  });
+}});
+
+/* ---------- App shell ---------- */
+const navgroups=document.getElementById('navgroups'),mobsel=document.getElementById('mobsel');const navBtns={};
+Object.entries(GROUPS).forEach(([g,[name,sub]])=>{const sec=el('div',{class:'grp'},el('h2',{},name),el('p',{},sub));const og=el('optgroup',{label:name});
+  MODULES.filter(m=>m.group===g).forEach(m=>{const b=el('button',{type:'button',class:'navb'},m.title);b.addEventListener('click',()=>show(m.id));navBtns[m.id]=b;sec.append(b);og.append(el('option',{value:m.id},m.title));});
+  navgroups.append(sec);mobsel.append(og);});
+mobsel.addEventListener('change',()=>show(mobsel.value));
+function fill(id,arr){const h=document.getElementById(id);h.innerHTML='';arr.forEach(p=>h.append(el('p',{html:p})));}
+function show(id){
+  const m=MODULES.find(x=>x.id===id)||MODULES.find(x=>x.id==='mimo');
+  cancelAnimationFrame(raf);
+  document.getElementById('areatag').textContent=GROUPS[m.group][0];
+  document.getElementById('title').textContent=m.title;document.getElementById('idea').textContent=m.idea;
+  const stage=document.getElementById('stage'),c=document.getElementById('controls'),r=document.getElementById('reads'),ex=document.getElementById('extra');
+  [stage,c,r,ex].forEach(e=>e.innerHTML='');
+  fill('how',m.how);fill('why',m.why);fill('sayt',m.say);
+  Object.entries(navBtns).forEach(([k,b])=>b.setAttribute('aria-current',String(k===m.id)));mobsel.value=m.id;
+  try{history.replaceState(null,'','#'+m.id);}catch(e){}
+  m.build({stage,controls:Controls(c),read:Reads(r),extra:ex});
+}
+const start=(location.hash||'').slice(1);
+show(MODULES.some(m=>m.id===start)?start:'mimo');
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(MODULES.some(m=>m.id===h)&&document.getElementById('title').textContent!==MODULES.find(m=>m.id===h).title)show(h);});
+})();
+</script>
+</body>
+</html>

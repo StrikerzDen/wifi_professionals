@@ -1,0 +1,54 @@
+<!-- wp:group {"tagName":"aside","className":"sidebar","layout":{"type":"default"}} -->
+<aside class="wp-block-group sidebar">
+
+	<!-- wp:group {"className":"widget","layout":{"type":"default"}} -->
+	<div class="wp-block-group widget">
+		<!-- wp:search {"label":"Search","showLabel":false,"placeholder":"Search the library","buttonText":"Search","buttonUseIcon":true} /-->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"className":"widget","layout":{"type":"default"}} -->
+	<div class="wp-block-group widget">
+		<!-- wp:heading {"level":2,"className":"widget-title"} -->
+		<h2 class="wp-block-heading widget-title">Most viewed</h2>
+		<!-- /wp:heading -->
+		<!-- wp:shortcode -->
+		[wifi_most_viewed number="6"]
+		<!-- /wp:shortcode -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"className":"widget","layout":{"type":"default"}} -->
+	<div class="wp-block-group widget">
+		<!-- wp:heading {"level":2,"className":"widget-title"} -->
+		<h2 class="wp-block-heading widget-title">Browse by topic</h2>
+		<!-- /wp:heading -->
+		<!-- wp:categories {"showPostCounts":true,"className":"topic-list"} /-->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"className":"widget","layout":{"type":"default"}} -->
+	<div class="wp-block-group widget">
+		<!-- wp:heading {"level":2,"className":"widget-title"} -->
+		<h2 class="wp-block-heading widget-title">Latest</h2>
+		<!-- /wp:heading -->
+		<!-- wp:latest-posts {"postsToShow":5,"displayPostDate":true,"className":"latest-list"} /-->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"className":"widget widget-lab","layout":{"type":"default"}} -->
+	<div class="wp-block-group widget widget-lab">
+		<!-- wp:paragraph {"className":"eyebrow eyebrow-brand"} -->
+		<p class="eyebrow eyebrow-brand">Wi-Fi Pro Lab</p>
+		<!-- /wp:paragraph -->
+		<!-- wp:paragraph -->
+		<p>Interactive models that show how Wi-Fi really works.</p>
+		<!-- /wp:paragraph -->
+		<!-- wp:buttons -->
+		<div class="wp-block-buttons"><!-- wp:button {"className":"btn-primary-light"} --><div class="wp-block-button btn-primary-light"><a class="wp-block-button__link wp-element-button" href="/lab/">Open the lab</a></div><!-- /wp:button --></div>
+		<!-- /wp:buttons -->
+	</div>
+	<!-- /wp:group -->
+
+</aside>
+<!-- /wp:group -->

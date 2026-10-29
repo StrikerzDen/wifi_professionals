@@ -1,0 +1,12 @@
+
+WordPress Playground CLI
+
+PHP 8.3  WordPress latest
+Extensions intl
+Mount /home/zarian/Documents/Wi-Fi-Pro-Lab/theme/wifi-pro → /wordpress/wp-content/themes/wifi-pro
+Mount /home/zarian/Documents/Wi-Fi-Pro-Lab/content → /wordpress/lab-content
+Blueprint blueprint.json
+
+
+Ready! WordPress is running on http://127.0.0.1:9400 (6 workers)
+

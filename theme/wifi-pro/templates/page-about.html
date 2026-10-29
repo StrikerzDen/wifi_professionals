@@ -1,0 +1,42 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+<!-- wp:group {"tagName":"main","className":"page-main page-main--about","layout":{"type":"constrained","wideSize":"1200px"}} -->
+<main class="wp-block-group page-main page-main--about">
+	<!-- wp:post-content {"align":"wide","layout":{"type":"constrained","contentSize":"1200px","wideSize":"1200px"}} /-->
+	<!-- wp:group {"className":"about-comments","layout":{"type":"constrained","contentSize":"820px"}} -->
+	<div class="wp-block-group about-comments">
+		<!-- wp:heading {"level":2} -->
+		<h2 class="wp-block-heading">Join the conversation</h2>
+		<!-- /wp:heading -->
+		<!-- wp:paragraph {"className":"about-comments__intro"} -->
+		<p class="about-comments__intro">Questions, thoughts or your own WiFi story? Leave a comment below. Comments are checked for spam before they appear.</p>
+		<!-- /wp:paragraph -->
+		<!-- wp:comments {"className":"comments-area"} -->
+		<div class="wp-block-comments comments-area">
+			<!-- wp:comments-title /-->
+			<!-- wp:comment-template -->
+				<!-- wp:group {"className":"comment-item","layout":{"type":"default"}} -->
+				<div class="wp-block-group comment-item">
+					<!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap"}} -->
+					<div class="wp-block-group">
+						<!-- wp:comment-author-name /-->
+						<!-- wp:comment-date /-->
+					</div>
+					<!-- /wp:group -->
+					<!-- wp:comment-content /-->
+					<!-- wp:comment-reply-link /-->
+				</div>
+				<!-- /wp:group -->
+			<!-- /wp:comment-template -->
+			<!-- wp:comments-pagination -->
+				<!-- wp:comments-pagination-previous /-->
+				<!-- wp:comments-pagination-numbers /-->
+				<!-- wp:comments-pagination-next /-->
+			<!-- /wp:comments-pagination -->
+			<!-- wp:post-comments-form /-->
+		</div>
+		<!-- /wp:comments -->
+	</div>
+	<!-- /wp:group -->
+</main>
+<!-- /wp:group -->
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
